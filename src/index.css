@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f9fafb;      /* page background */
+  --color-surface: #ffffff;         /* cards, modals */
+  --color-surface-alt: #f3f4f6;     /* subtle chips */
+  --color-border: #e5e7eb;          /* neutral borders */
+
+  --color-text: #111827;            /* primary text */
+  --color-text-muted: #6b7280;      /* secondary text */
+
+  --color-accent: #2563eb;          /* primary blue */
+  --color-accent-hover: #1d4ed8;
+
+  --color-active: #14b8a6;          /* teal accent */
+  --color-active-hover: #0d9488;
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+
+  /* Decorative / pastel shapes */
+  --color-shape1: #fbcfe8;   /* soft pink */
+  --color-shape2: #bfdbfe;   /* baby blue */
+  --color-shape3: #bbf7d0;   /* mint green */
+  --color-shape4: #fde68a;   /* light yellow */
+  --color-stroke: #d1d5db;   /* stroke / divider */
+}
+
+
+.dark {
+  --color-background: #111827;      /* deep gray background */
+  --color-surface: #1f2937;         /* cards, modals */
+  --color-surface-alt: #374151;     /* lighter chips */
+  --color-border: #4b5563;
+
+  --color-text: #f9fafb;
+  --color-text-muted: #9ca3af;
+
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+
+  --color-active: #2dd4bf;          /* teal accent */
+  --color-active-hover: #5eead4;
+
+  --color-success: #22c55e;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
+
+  /* Decorative / muted shapes */
+  --color-shape1: #7c3aed;   /* violet */
+  --color-shape2: #2563eb;   /* blue */
+  --color-shape3: #059669;   /* green */
+  --color-shape4: #b45309;   /* amber */
+  --color-stroke: #6b7280;   /* divider stroke */
+}
