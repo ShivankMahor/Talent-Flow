@@ -1,14 +1,12 @@
-import './App.css'
-import { Routes, Route } from 'react-router-dom';
-import ExampleComponent from './test';
-function App() {
+import { ToastContainer } from "react-toastify";
+import AppRouter from "./app/routes/AppRouter";
+import "react-toastify/dist/ReactToastify.css";
 
+export default function App() {
   return (
-    <Routes>
-      <Route path='/test' element={<ExampleComponent/>}></Route>
-      {/* <Route path='/' element={</>}></Route> */}
-    </Routes>
-  )
+    <>
+      <AppRouter />
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
 }
-
-export default App
