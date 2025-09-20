@@ -4,7 +4,7 @@ import { useJobs } from "../context/JobsContext";
 import Navbar from "../../../components/Navbar";
 import Button from "../../../components/Button";
 
-export default function JobDetails() {
+export default function JobDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { jobs } = useJobs();

@@ -22,12 +22,12 @@ export default function JobCard({ job, dragHandleProps }) {
         </div>
 
         {/* Job content */}
-        <div className="flex-1 min-w-0" onClick={() => navigate(`/jobs/${job.id}`)}>
+        <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4">
             {/* Title + badge */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] truncate">
+                <h3  onClick={() => navigate(`/jobs/${job.id}`)} className="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] truncate">
                   {job.title}
                 </h3>
                 <Badge status={job.status}>{job.status}</Badge>

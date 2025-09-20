@@ -15,9 +15,7 @@ import CandidateProfile from "../../features/candidates/pages/CandidateProfile";
 import NotFound from "../../features/common/pages/NotFound";
 
 import JobsList from "../../features/jobs/pages/JobsList";
-import JobDetails from "../../features/jobs/pages/JobDetails";
-// import JobDetail from "../../features/jobs/pages/JobDetail";
-// import CandidateList from "../../features/candidates/pages/CandidatesList";
+import JobDetailsProvider from "../../features/jobs/pages/JobDetailProvider";
 
 export default function AppRouter() {
   const { user } = useAuth();
@@ -39,7 +37,7 @@ export default function AppRouter() {
           path="/jobs/:id"
           element={
             <RoleRoute allowed={['candidate', 'hr']}>
-              <JobDetails/>
+              <JobDetailsProvider/>
             </RoleRoute>
           }
         />
