@@ -14,8 +14,8 @@ import CandidateDashboard from "../../features/candidates/pages/CandidateDashboa
 import CandidateProfile from "../../features/candidates/pages/CandidateProfile";
 import NotFound from "../../features/common/pages/NotFound";
 
-import JobsList from "../../features/jobs/pages/JobsList";
-import JobDetailsProvider from "../../features/jobs/pages/JobDetailProvider";
+import JobDetailProvider from "../../features/jobs/providers/JobDetailProvider";
+import JobsPageProvider from "../../features/jobs/providers/JobsPageProvider";
 
 export default function AppRouter() {
   const { user } = useAuth();
@@ -32,16 +32,6 @@ export default function AppRouter() {
             </PublicRoute>
           }
         />
-        {/* Public */}
-        <Route
-          path="/jobs/:id"
-          element={
-            <RoleRoute allowed={['candidate', 'hr']}>
-              <JobDetailsProvider/>
-            </RoleRoute>
-          }
-        />
-
         {/* Candidate */}
         <Route
           path="/dashboard"
@@ -65,18 +55,18 @@ export default function AppRouter() {
           path="/jobs"
           element={
             <RoleRoute allowed={["admin", "hr"]}>
-              <JobsList />
+              <JobsPageProvider />
             </RoleRoute>
           }
         />
-        {/* <Route
+        <Route
           path="/jobs/:jobId"
           element={
             <RoleRoute allowed={["admin", "hr"]}>
-              <JobDetail />
+              <JobDetailProvider />
             </RoleRoute>
           }
-        /> */}
+        />
         {/* <Route
           path="/candidates"
           element={

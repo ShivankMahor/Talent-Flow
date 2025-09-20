@@ -1,3 +1,5 @@
+// \src\features\jobs\pages\JobsPage.jsx
+
 import { useJobs } from "../context/JobsContext";
 import Navbar from "../../../components/Navbar";
 import JobsToolbar from "../components/JobsToolbar";

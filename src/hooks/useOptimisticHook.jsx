@@ -36,6 +36,7 @@ export function useOptimisticHook(initial = []) {
       //     const map = new Map(action.items.map((i) => [i.id, i]));
       //     return current.map((i) => (map.has(i.id) ? { ...i, ...map.get(i.id) } : i));
       //   }
+      
       case "updateTwoJobs": {
         const map = new Map(action.items.map((i) => [i.id, i]));
         const temp = current.map((i) =>
