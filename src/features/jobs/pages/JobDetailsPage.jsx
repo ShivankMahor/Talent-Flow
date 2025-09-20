@@ -77,3 +77,6 @@ export default function JobDetailsPage() {
     </div>
   );
 }
+
+
+

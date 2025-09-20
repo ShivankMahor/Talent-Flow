@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, useOptimistic, startTransition } from "react";
 import { toast } from "react-toastify";
 import { getJobs, reorderJob, updateJob } from "../services/jobs.api";
+import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
 
 const JobsContext = createContext(null);
 
@@ -16,16 +17,7 @@ export function JobsProvider({ children }) {
   const pageSize = 10;
 
   // optimistic wrapper
-  const [optimisticJobs, setOptimisticJobs] = useOptimistic(jobs, (currentJobs, newData) => {
-    const fromJob = newData.fromJob;
-    const toJob = newData.toJob;
-    const updated = currentJobs.map((job) => {
-      if (job.id === fromJob.id) return fromJob;
-      if (job.id === toJob.id) return toJob;
-      return job;
-    });
-    return [...updated].sort((a, b) => a.order - b.order);
-  });
+  const [optimisticJobs, setOptimisticJobs] = useOptimisticHook(jobs);
 
   // fetch jobs
   useEffect(() => {
@@ -40,12 +32,14 @@ export function JobsProvider({ children }) {
 
   // --- Actions ---
   const handleReorder = async (jobId, fromJob, toJob) => {
-    const newData = {
-      fromJob: { ...fromJob, order: toJob.order },
-      toJob: { ...toJob, order: fromJob.order },
-    };
-    setOptimisticJobs(newData);
+    const items = [
+      { ...fromJob, order: toJob.order },
+      { ...toJob, order: fromJob.order },
+    ];
 
+    // optimistic update
+    setOptimisticJobs({ type: "updateTwoJobs", items});
+    
     startTransition(async () => {
       try {
         const { updatedFromJob, updatedToJob } = await reorderJob(jobId, fromJob.order, toJob.order);
@@ -64,52 +58,49 @@ export function JobsProvider({ children }) {
     });
   };
 
-  
-  const openEditModal = (job) => {
-    console.log("open")
-    setSelectedJob(job);
-    setOpenEdit(true);
-  };
-  
-  const closeEditModal = () => {
-    console.log("close")
-    setSelectedJob(null);
-    setOpenEdit(false);
-  };
-
   const handleEdit = async (jobId, updates) => {
     const original = jobs.find((j) => j.id === jobId);
     if (!original) return;
 
-    const optimistic = { ...original, ...updates, optimistic: true };
-    setJobs((prev) => prev.map((j) => (j.id === jobId ? optimistic : j)));
+    // optimistic update
+    setOptimisticJobs({
+      type: "replaceOne",
+      id: jobId,
+      item: updates,
+    });
 
-    try {
-      const updated = await updateJob(jobId, updates);
-      setJobs((prev) => prev.map((j) => (j.id === jobId ? updated : j)));
-      toast.success("Job updated ✅");
-    } catch (err) {
-      setJobs((prev) => prev.map((j) => (j.id === jobId ? original : j)));
-      toast.error(err.message || "Failed to update job ❌");
-    }
+    startTransition(async () => {
+      try {
+        const updated = await updateJob(jobId, updates);
+        setJobs((prev) => prev.map((j) => (j.id === jobId ? updated : j)));
+        toast.success("Job updated ✅");
+      } catch (err) {
+        toast.error(err.message || "Failed to update job ❌");
+      }
+    });
   };
 
   const handleArchive = async (job) => {
-    const original = job;
     const toggledStatus = job.status === "archived" ? "active" : "archived";
 
     // optimistic update
-    const optimistic = { ...job, status: toggledStatus, optimistic: true };
-    setJobs((prev) => prev.map((j) => (j.id === job.id ? optimistic : j)));
+    setOptimisticJobs({
+      type: "replaceOne",
+      id: job.id,
+      item: { status: toggledStatus },
+    });
 
-    try {
-      const result = await updateJob(job.id, { status: toggledStatus });
-      setJobs((prev) => prev.map((j) => (j.id === job.id ? result : j)));
-      toast.success(result.status === "archived" ? "Job archived ✅" : "Job restored ✅");
-    } catch (err) {
-      setJobs((prev) => prev.map((j) => (j.id === job.id ? original : j)));
-      toast.error(err.message || "Failed to update status ❌");
-    }
+    startTransition(async () => {
+      try {
+        const result = await updateJob(job.id, { status: toggledStatus });
+        setJobs((prev) => prev.map((j) => (j.id === job.id ? result : j)));
+        toast.success(
+          result.status === "archived" ? "Job archived ✅" : "Job restored ✅"
+        );
+      } catch (err) {
+        toast.error(err.message || "Failed to update status ❌");
+      }
+    });
   };
 
 
@@ -130,8 +121,14 @@ export function JobsProvider({ children }) {
         handleEdit,
         handleArchive,
         setJobs,
-        openEditModal,
-        closeEditModal,
+        openEditModal: (job) => {
+          setSelectedJob(job);
+          setOpenEdit(true);
+        },
+        closeEditModal: () => {
+          setSelectedJob(null);
+          setOpenEdit(false);
+        },
       }}
     >
       {children}

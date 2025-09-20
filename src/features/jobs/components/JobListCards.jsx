@@ -15,6 +15,7 @@ import {
 import SortableJobCard from "./SortableJobCard";
 
 export default function JobsListCards({ jobs, onReorder}) {
+  console.log(jobs)
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
