@@ -5,7 +5,7 @@ import { Response } from "miragejs";
  * @param {Function} handler - your actual route handler
  * @param {number} failRate - probability between 0 and 1 (default 0.08 = 8%)
  */
-export function withFailure(handler, failRate = 0.55) {
+export function withFailure(handler, failRate = 0.1) {
   return async (schema, request) => {
     if (Math.random() < failRate) {
       console.warn(`[Mirage] Simulated network error on ${request.method} ${request.url}`);

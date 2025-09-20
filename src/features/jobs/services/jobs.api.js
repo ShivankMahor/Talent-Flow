@@ -1,5 +1,6 @@
 import db from "../../../db";
 import axios from "axios";
+import { jobSchema } from "../schemas/jobSchema";
 
 /**
  * GET /jobs
@@ -12,6 +13,7 @@ export async function getJobs({
   search = "",
   status = "",
   sort = "",
+  tag = "",
 } = {}) {
   console.log("[jobs.api] Fetching jobs (network + Dexie):", {
     page,
@@ -19,26 +21,44 @@ export async function getJobs({
     search,
     status,
     sort,
+    tag,
   });
-
+  // console.log(page = 1,
+  // pageSize = 10,
+  // search = "",
+  // status = "",
+  // sort = "",
+  // tag = "",)
   try {
     // 1. Simulate network call (Mirage may inject delay/error)
     const res = await axios.get("/api/jobs", {
-      params: { page, pageSize, search, status, sort },
+      params: { page, pageSize, search, status, sort, tag },
     });
 
     // 2. Dexie = real source of truth
     let jobs = await db.jobs.toArray();
 
+    // 🔍 Search by title OR tags
     if (search) {
-      jobs = jobs.filter((j) =>
-        j.title.toLowerCase().includes(search.toLowerCase())
+      const s = search.toLowerCase();
+      jobs = jobs.filter(
+        (j) =>
+          j.title.toLowerCase().includes(s) ||
+          (j.tags && j.tags.some((t) => t.toLowerCase().includes(s)))
       );
     }
+
+    // 🏷️ Filter by status
     if (status) {
       jobs = jobs.filter((j) => j.status === status);
     }
 
+    // 🏷️ Filter by specific tag
+    if (tag) {
+      jobs = jobs.filter((j) => j.tags && j.tags.includes(tag));
+    }
+
+    // 🔀 Sorting
     if (sort === "title") {
       jobs = jobs.sort((a, b) => a.title.localeCompare(b.title));
     }
@@ -46,15 +66,32 @@ export async function getJobs({
       jobs = jobs.sort((a, b) => a.order - b.order);
     }
 
+    // 📄 Pagination
     const total = jobs.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    if (page > totalPages) {
+      page = 1; // reset if page exceeds total pages
+    }
+
     const start = (page - 1) * pageSize;
     const paginated = jobs.slice(start, start + pageSize);
 
-    return { data: paginated, meta: { total, page, pageSize } };
+    // 🏷️ Collect all unique tags (for dropdowns)
+    const tagsFromDB = await db.tags.toArray();
+    const allTags = tagsFromDB.map((t) => t.name).sort();
+    return {
+      data: paginated,
+      meta: { total, totalPages, page, pageSize },
+      tags: allTags,
+    };
   } catch (err) {
-    // Axios error handling
     if (err.response) {
-      console.error("[jobs.api] Mirage returned error:", err.response.status, err.response.data);
+      console.error(
+        "[jobs.api] Mirage returned error:",
+        err.response.status,
+        err.response.data
+      );
     } else {
       console.error("[jobs.api] Network error:", err.message);
     }
@@ -69,55 +106,68 @@ export async function createJob(job) {
   console.log("[jobs.api] Creating job:", job);
 
   try {
+    // 1. Validate basic fields with Zod
+    const parsed = jobSchema.parse(job);
+    console.log("JOB: ",job)
+    // 4. Simulate API call
     const res = await fetch("/api/jobs", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(job),
     });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    // 2. Ensure slug is unique
+    const existing = await db.jobs.where("slug").equals(parsed.slug).first();
+    if (existing) {
+      throw new Error(`Slug "${parsed.slug}" already exists`);
+    }
 
-    const newJob = await res.json();
-    console.log("[jobs.api] Job created (server):", newJob);
+    // 3. Check unique order
+    const existingOrder = await db.jobs.where("order").equals(parsed.order).first();
+    if (existingOrder) {
+      throw new Error(`Order "${parsed.order}" already exists`);
+    }
 
-    // Save in Dexie
-    await db.jobs.add(newJob);
-    console.log("[jobs.api] Dexie job added:", newJob);
+    
 
-    return newJob;
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} while creating job`);
+    }
+
+    // 5. Persist to Dexie
+    const id = await db.jobs.add(job);
+    const storedJob = await db.jobs.get(id);
+
+    console.log("[jobs.api] Job created:", storedJob);
+    return storedJob;
   } catch (err) {
     console.error("[jobs.api] Failed to create job:", err);
-    throw err;
+    throw err; // propagate so UI can handle optimistic rollback
   }
 }
+
 
 /**
  * PATCH /jobs/:id → update job (e.g., archive/unarchive, edit)
  */
 export async function updateJob(id, updates) {
-  console.log("[jobs.api] Updating job:", { id, updates });
+  console.log("[jobs.api] updateJob called:", { id, updates });
 
-  try {
-    const res = await fetch(`/api/jobs/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(updates),
-    });
+  const res = await axios.patch(`/api/jobs/${id}`, updates);
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  // 2. Get current job
+  const job = await db.jobs.get(id);
+  if (!job) throw new Error("Job not found in Dexie");
 
-    const updated = await res.json();
-    console.log("[jobs.api] Job updated (server):", updated);
+  // 3. Merge updates
+  const updated = { ...job, ...updates };
 
-    // Update Dexie
-    await db.jobs.put(updated);
-    console.log("[jobs.api] Dexie job updated:", updated);
+  // 4. Persist to Dexie
+  await db.jobs.put(updated);
 
-    return updated;
-  } catch (err) {
-    console.error("[jobs.api] Failed to update job:", err);
-    throw err;
-  }
+  console.log("[jobs.api] Job updated (Dexie):", updated);
+  return updated;
 }
-
 
 /**
  * PATCH /jobs/:id/reorder

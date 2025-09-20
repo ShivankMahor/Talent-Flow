@@ -1,18 +1,56 @@
-// features/jobs/components/JobsToolbar.jsx
+import { useState, useEffect } from "react";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import Select from "../../../components/Select";
+import Modal from "../../../components/Modal";
+import JobForm from "./JobForm";
+import { createJob } from "../services/jobs.api";
+import { toast } from "react-toastify";
 
-export default function JobsToolbar({ filters, onChangeFilters, allTags = [] }) {
-  console.log("Tags",allTags)
+export default function JobsToolbar({ filters, onChangeFilters, allTags = [], onJobCreated }) {
+  const [searchInput, setSearchInput] = useState(filters.search || "");
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleCreateJob = async (newJob) => {
+    // 1. Create temporary optimistic job
+    const tempId = `temp-${Date.now()}`;
+    const tempJob = {
+      ...newJob,
+      id: tempId,
+      optimistic: true,
+    };
+    if (onJobCreated) onJobCreated(tempJob);
+
+    setOpenModal(false);
+
+    try {
+      // 2. Try actual API call
+      const created = await createJob(newJob);
+
+      // 3. Replace temp with real job
+      if (onJobCreated) onJobCreated(created, tempId);
+      toast.success("Job created successfully ✅");
+    } catch (err) {
+      // 4. Rollback
+      console.error("❌ Failed to create job:", err);
+      toast.error(err.message || "Failed to create job ❌");
+      if (onJobCreated) onJobCreated(null, tempId);
+    }
+  };
+
+  // keep filters in sync with search
+  useEffect(() => {
+    onChangeFilters({ ...filters, search: searchInput });
+  }, [searchInput]);
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <div className="flex space-x-1.5">
-        {/* Search (title + tags) */}
+        {/* Search */}
         <Input
           placeholder="Search jobs (title or tag)..."
-          value={filters.search}
-          onChange={(e) => onChangeFilters({ ...filters, search: e.target.value })}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           className="flex-1"
         />
 
@@ -24,7 +62,7 @@ export default function JobsToolbar({ filters, onChangeFilters, allTags = [] }) 
             { value: "", label: "All Statuses" },
             { value: "active", label: "Active" },
             { value: "archived", label: "Archived" },
-            { value: "closed", label: "Closed" }
+            { value: "closed", label: "Closed" },
           ]}
         />
 
@@ -34,12 +72,17 @@ export default function JobsToolbar({ filters, onChangeFilters, allTags = [] }) 
           onChange={(e) => onChangeFilters({ ...filters, tag: e.target.value })}
           options={[
             { value: "", label: "All Tags" },
-            ...allTags.map((tag) => ({ value: tag, label: tag }))
+            ...allTags.map((tag) => ({ value: tag, label: tag })),
           ]}
         />
       </div>
+
       {/* Create Job */}
-      <Button onClick={() => alert("TODO: open JobFormModal")}>+ Create Job</Button>
+      <Button onClick={() => setOpenModal(true)}>+ Create Job</Button>
+
+      <Modal open={openModal} onClose={() => setOpenModal(false)} title="Create Job">
+        <JobForm onSubmit={handleCreateJob} onCancel={() => setOpenModal(false)} />
+      </Modal>
     </div>
   );
 }
