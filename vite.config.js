@@ -6,5 +6,14 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ],
+  ],  
+  server: {
+    fs: { allow: ['.'] },
+  },
+  routes: [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 })

@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <Link to="/" className="text-lg font-bold text-[var(--color-accent)]">
@@ -26,14 +26,17 @@ export default function Navbar() {
           <div className="hidden md:flex space-x-6 items-center">
             {user?.role === "hr" || user?.role === "admin" ? (
               <>
-                <Link to="/jobs" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
+                <Link to="/" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
                   Jobs
                 </Link>
                 <Link to="/candidates" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
                   Candidates
                 </Link>
-                <Link to="/assessments" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
-                  Assessments
+                <Link to="/candidates/board" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
+                  Candidates Board
+                </Link>
+                <Link to="/test" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
+                  test
                 </Link>
               </>
             ) : (

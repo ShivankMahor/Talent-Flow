@@ -49,6 +49,9 @@ export function useOptimisticHook(initial = []) {
       case "addLast": {
         return [...current, action.item];
       }
+      case "prependOne": {
+        return [action.item, ...current];
+      }
 
       case "insertAt": {
         const { index, item } = action;

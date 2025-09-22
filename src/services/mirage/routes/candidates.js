@@ -1,3 +1,5 @@
+import { withFailure }  from "../utils/WithFailure"
+import db from '../../../db/index'
 export default function candidatesRoutes(server) {
   // GET /candidates
   server.get("/candidates", (schema, request) => {
@@ -5,12 +7,28 @@ export default function candidatesRoutes(server) {
     return { data: [] };
   });
 
-  // POST /candidates
-  server.post("/candidates", (schema, request) => {
-    const attrs = JSON.parse(request.requestBody);
-    return { ...attrs, id: Date.now() };
-  });
+ // POST /candidates
+  server.post(
+    "/candidates",
+    withFailure(async (_schema, request) => {
+      try {
+        const attrs = JSON.parse(request.requestBody);
 
+        console.log("[POST /candidates] Incoming:", attrs);
+
+        // ✅ Insert into Dexie
+        const id = await db.candidates.add(attrs);
+        const candidate = await db.candidates.get(id);
+
+        console.log("[POST /candidates] Created:", candidate);
+
+        return candidate;
+      } catch (err) {
+        console.error("[POST /candidates] Error:", err);
+        return new Response(500, {}, { error: "Failed to create candidate" });
+      }
+    })
+  );
   // PATCH /candidates/:id
   server.patch("/candidates/:id", (schema, request) => {
     const id = request.params.id;

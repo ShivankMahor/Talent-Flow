@@ -73,3 +73,21 @@
   --color-shape3: #059669;   /* green */
   --color-shape4: #b45309;   /* amber */
 }
+
+
+.candidate-card {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.candidate-card:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+/* Make cursor gray */
+.candidate-card {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewport='0 0 20 20' style='fill:gray;'><circle cx='10' cy='10' r='4'/></svg>")
+      10 10,
+    grab;
+}

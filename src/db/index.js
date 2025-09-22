@@ -9,7 +9,8 @@ db.version(2).stores({
   assessments: "++id, jobId, title",
   settings: "key, value",
   tags: "++id, name",          // master tags
-  jobTags: "++id, jobId, tagId" // join table many-to-many
+  jobTags: "++id, jobId, tagId", // join table many-to-many
+  users: "++id, email, password, name, role" // ✅ new table
 });
 
 export default db;

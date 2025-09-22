@@ -1,104 +1,89 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
-
-// Route wrappers
-import PublicRoute from "./PublicRoute";
-import RoleRoute from "./RoleRoute";
 
 // Auth
 import Login from "../../features/auth/pages/Login";
-import Unauthorized from "../../features/auth/pages/Unauthorized";
 
-// Candidate
-import CandidateDashboard from "../../features/candidates/pages/CandidateDashboard";
-import CandidateProfile from "../../features/candidates/pages/CandidateProfile";
-import NotFound from "../../features/common/pages/NotFound";
-
+// Jobs
 import JobDetailProvider from "../../features/jobs/providers/JobDetailProvider";
 import JobsPageProvider from "../../features/jobs/providers/JobsPageProvider";
+
+// Candidate
+import CandidatesDetailPageProvider from "../../features/candidates/providers/CandidatesDetailPageProvider";
+import CandidatesPage from "../../features/candidates/pages/CandidatesPage";
+import CandidatesBoardPage from "../../features/candidates/pages/CandidateBoardPage";
+import { CandidatesProvider } from "../../features/candidates/context/CandidatesContext";
+// Common
+import NotFound from "../../features/common/pages/NotFound";
+import Test from "../../features/candidates/pages/Test";
+import { BoardCandidatesProvider } from "../../features/candidates/context/BoardCandidatesContext";
+import { ToastContainer } from "react-toastify";
 
 export default function AppRouter() {
   const { user } = useAuth();
 
   return (
-    <Router>
       <Routes>
-        {/* Public */}
+        {/* -------- Login -------- */}
         <Route
           path="/login"
-          element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
-        />
-        {/* Candidate */}
-        <Route
-          path="/dashboard"
-          element={
-            <RoleRoute allowed={["candidate"]}>
-              <CandidateDashboard />
-            </RoleRoute>
-          }
-        />
-        <Route
-          path="/profile/:id"
-          element={
-            <RoleRoute allowed={["candidate"]}>
-              <CandidateProfile />
-            </RoleRoute>
-          }
+          element={!user ? <Login /> : <Navigate to="/" replace />}
         />
 
-        {/* HR/Admin */}
-        <Route
-          path="/jobs"
-          element={
-            <RoleRoute allowed={["admin", "hr"]}>
-              <JobsPageProvider />
-            </RoleRoute>
-          }
-        />
-        <Route
-          path="/jobs/:jobId"
-          element={
-            <RoleRoute allowed={["admin", "hr"]}>
-              <JobDetailProvider />
-            </RoleRoute>
-          }
-        />
-        {/* <Route
-          path="/candidates"
-          element={
-            <RoleRoute allowed={["admin", "hr"]}>
-              <CandidatesList />
-            </RoleRoute>
-          }
-        /> */}
+        {/* -------- Protected Routes -------- */}
+        {user ? (
+          <>
+            {/* <Route path="/" element={<Navigate to="/candidates/board" replace />} /> */}
 
-        {/* Unauthorized */}
-        <Route path="/unauthorized" element={<Unauthorized />} />
-
-        {/* Default redirect */}
-        <Route
-          path="/"
-          element={
-            <Navigate
-              to={
-                user
-                  ? user.role === "candidate"
-                    ? "/dashboard"
-                    : "/jobs"
-                  : "/login"
+            <Route
+              path="/"
+              element={
+                <JobsPageProvider/>
               }
-              replace
             />
-          }
-        />
+            <Route
+              path="/test"
+              element={
+                <Test/>
+              }
+            />
+            <Route
+              path="/jobs/:jobId"
+              element={
+                <JobDetailProvider/>
+              }
+            />
 
-        {/* 404 */}
+            <Route
+              path="/candidates"
+              element={
+                <CandidatesProvider>
+                  <CandidatesPage/>
+                </CandidatesProvider>
+              }
+            />
+            <Route
+              path="/candidates/board"
+              element={
+                <BoardCandidatesProvider>
+                  <CandidatesBoardPage/>
+                </BoardCandidatesProvider>
+              }
+            />
+            <Route
+              path="/candidates/:id"
+              element={
+                <CandidatesDetailPageProvider/>
+              }
+            />
+          </>
+        ) : (
+          // If not logged in → everything redirects to login
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
+
+        {/* -------- 404 -------- */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
   );
 }

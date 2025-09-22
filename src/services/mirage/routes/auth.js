@@ -1,15 +1,44 @@
+import { withFailure } from "../utils/WithFailure";
+import db from '../../../db/index'
+import { Response } from "miragejs";
 export default function authRoutes(server){
       
-    server.post("/login", (schema, request) => {
-    const { email, password } = JSON.parse(request.requestBody);
+  server.post("/login", withFailure(async(_schema, request) => {
+    try{
+      const { email, password } = JSON.parse(request.requestBody);
+      console.log(email,password)
+      if (!email || !password) {
+        return new Response(400, {}, { error: "Email and password are required" });
+      }
 
-    if (email === "hr@talentflow.com" && password === "1234") {
-        return { id: 100, name: "HR Manager", role: "hr" };
+      const user = await db.users.where("email").equals(email).first();
+      
+      console.log("User: ",user)
+      if (!user || user.password !== password) {
+        return new Response(401, {}, { error: "Invalid credentials" });
+      }
+      
+      return {
+        user: {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+          email: user.email,
+        },
+      };
+    } catch (err) {
+      console.error("[Mirage] /login error:", err);
+      return new Response(500, {}, { error: "Server error, please try again" });
     }
-    if (email === "alice@candidate.com" && password === "1234") {
-        return { id: 101, name: "Alice Candidate", role: "candidate" };
-    }
+  }));
 
-    return new Response(401, {}, { error: "Invalid credentials" });
-    });
+  // LOGOUT
+  server.post( "/logout", async () => {
+    try {
+      return { success: true };
+    } catch (err) {
+      console.error("[Mirage] /logout error:", err);
+      return new Response(500, {}, { error: "Server error, please try again" });
+    }
+  })
 }
