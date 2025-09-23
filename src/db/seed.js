@@ -72,41 +72,423 @@ const jobs = [
     });
   }
 
-  // Assessments
-  const assessments = [
-    {
-      jobId: 1,
-      title: "Frontend Quiz",
-      questions: Array.from({ length: 10 }).map((_, i) => ({
-        type: "single-choice",
-        question: `Frontend Question ${i + 1}`,
-        options: ["A", "B", "C", "D"]
-      }))
-    },
-    {
-      jobId: 2,
-      title: "Backend Quiz",
-      questions: Array.from({ length: 12 }).map((_, i) => ({
-        type: "short-text",
-        question: `Backend Question ${i + 1}`
-      }))
-    },
-    {
-      jobId: 5,
-      title: "Data Science Quiz",
-      questions: Array.from({ length: 15 }).map((_, i) => ({
-        type: "numeric",
-        question: `Data Science Question ${i + 1}`,
-        min: 0,
-        max: 100
-      }))
-    }
-  ];
-  await db.assessments.bulkAdd(assessments);
   await db.users.bulkAdd([
     { email: "candidate@test.com", password: "1234", name: "Candidate User", role: "candidate" },
     { email: "hr@test.com", password: "abcd", name: "HR Manager", role: "hr" }
   ]);
   // Settings
   await db.settings.put({ key: "theme", value: "light" });
+const assessments = [
+  {
+  jobId: 1,
+  title: "Frontend Developer Assessment",
+  form: {
+    sections: [
+      {
+        id: 1,
+        title: "JavaScript Basics",
+        description: "Test your JS fundamentals",
+        questions: [
+          {
+            id: 101,
+            type: "single-choice",
+            question: "What does `===` check in JavaScript?",
+            required: true,
+            options: [
+              {
+                label: "Only value",
+                conditionalQuestion: {
+                  id: 1011,
+                  type: "short-text",
+                  question: "Give an example where value-only comparison can fail.",
+                  validation: { maxLength: 100 }
+                }
+              },
+              {
+                label: "Value and type",
+                conditionalQuestion: {
+                  id: 1012,
+                  type: "short-text",
+                  question: "Why is strict equality better than `==`?",
+                  validation: { maxLength: 100 }
+                }
+              },
+              {
+                label: "Memory reference",
+                conditionalQuestion: {
+                  id: 1013,
+                  type: "short-text",
+                  question: "Which operator is used for reference comparison?",
+                  validation: { maxLength: 100 }
+                }
+              }
+            ]
+          },
+          {
+            id: 102,
+            type: "short-text",
+            question: "Explain event delegation in JavaScript.",
+            required: true,
+            validation: { maxLength: 150 }
+          },
+          {
+            id: 103,
+            type: "numeric",
+            question: "What is the result of `parseInt('08')` in older JS versions?",
+            validation: { min: 0, max: 20 }
+          },
+          {
+            id: 104,
+            type: "multi-choice",
+            question: "Which of these are array methods?",
+            options: [
+              { label: "map()" },
+              { label: "filter()" },
+              { label: "reduce()" },
+              { label: "assign()" }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "React",
+        description: "Core React concepts",
+        questions: [
+          {
+            id: 105,
+            type: "short-text",
+            question: "What is JSX?",
+            validation: { maxLength: 100 }
+          },
+          {
+            id: 106,
+            type: "single-choice",
+            question: "Which hook is used for managing state?",
+            options: [
+              {
+                label: "useEffect",
+                conditionalQuestion: {
+                  id: 1061,
+                  type: "short-text",
+                  question: "When would you use useEffect for state-like behavior?",
+                  validation: { maxLength: 100 }
+                }
+              },
+              {
+                label: "useState",
+                conditionalQuestion: {
+                  id: 1062,
+                  type: "short-text",
+                  question: "Give an example of initializing state with useState.",
+                  validation: { maxLength: 100 }
+                }
+              },
+              {
+                label: "useReducer",
+                conditionalQuestion: {
+                  id: 1063,
+                  type: "long-text",
+                  question: "When would you use useReducer over useState?",
+                  validation: { maxLength: 200 }
+                }
+              }
+            ]
+          },
+          {
+            id: 107,
+            type: "long-text",
+            question: "Explain reconciliation in React.",
+            validation: { maxLength: 300 }
+          },
+          {
+            id: 108,
+            type: "multi-choice",
+            question: "Which of the following are React lifecycle methods (class)?",
+            options: [
+              { label: "componentDidMount" },
+              { label: "componentDidUpdate" },
+              { label: "componentWillUnmount" },
+              { label: "onMounted" }
+            ]
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "Frontend UI",
+        description: "CSS & HTML basics",
+        questions: [
+          {
+            id: 109,
+            type: "short-text",
+            question: "What does flex:1 mean in CSS Flexbox?",
+            validation: { maxLength: 80 }
+          },
+          {
+            id: 110,
+            type: "file-upload",
+            question: "Upload a screenshot of a UI you built",
+            validation: { fileType: "image", maxSizeMB: 2, multiple: false }
+          }
+        ]
+      }
+    ]
+  }
+},
+
+  {
+    jobId: 2,
+    title: "Backend Developer Technical Assessment",
+    form: {
+      sections: [
+        {
+          id: 4,
+          title: "Databases",
+          description: "SQL and database knowledge",
+          questions: [
+            {
+              id: 201,
+              type: "short-text",
+              question: "What is the difference between SQL and NoSQL databases?",
+              required: true,
+              validation: { maxLength: 120 }
+            },
+            {
+              id: 202,
+              type: "numeric",
+              question: "How many types of normalization forms exist?",
+              validation: { min: 1, max: 10 }
+            },
+            {
+              id: 203,
+              type: "multi-choice",
+              question: "Which of these are SQL commands?",
+              options: [
+                { label: "SELECT" },
+                { label: "INSERT" },
+                { label: "FETCH" },
+                { label: "UPDATE" }
+              ]
+            },
+            {
+              id: 204,
+              type: "single-choice",
+              question: "Which indexing strategy speeds up queries most?",
+              options: [
+                { label: "Clustered Index" },
+                { label: "Non-Clustered Index" },
+                { label: "No Index" }
+              ]
+            }
+          ]
+        },
+        {
+          id: 5,
+          title: "System Design",
+          description: "Scalability & architecture",
+          questions: [
+            {
+              id: 205,
+              type: "long-text",
+              question: "Design a URL shortener service like bit.ly. Describe your DB schema and scaling strategy.",
+              validation: { maxLength: 500 }
+            },
+            {
+              id: 206,
+              type: "short-text",
+              question: "What is horizontal scaling?",
+              validation: { maxLength: 80 }
+            },
+            {
+              id: 207,
+              type: "single-choice",
+              question: "Choose the best architecture for high read-heavy systems:",
+              options: [
+                { label: "Master-Slave replication" },
+                { label: "Master-Master replication" },
+                { 
+                  label: "Sharding",
+                  conditionalQuestion: {
+                    id: 2071,
+                    type: "short-text",
+                    question: "When would you NOT use sharding?",
+                    validation: { maxLength: 100 }
+                  }
+                }
+              ]
+            },
+            {
+              id: 208,
+              type: "multi-choice",
+              question: "Which of these are caching solutions?",
+              options: [
+                { label: "Redis" },
+                { label: "Memcached" },
+                { label: "Kafka" },
+                { label: "ElasticSearch" }
+              ]
+            }
+          ]
+        },
+        {
+          id: 6,
+          title: "APIs & Security",
+          description: "Web API and security basics",
+          questions: [
+            {
+              id: 209,
+              type: "short-text",
+              question: "What is an idempotent HTTP method?",
+              validation: { maxLength: 120 }
+            },
+            {
+              id: 210,
+              type: "file-upload",
+              question: "Upload a code snippet implementing JWT authentication",
+              validation: { fileType: "document", maxSizeMB: 3, multiple: false }
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  {
+    jobId: 3,
+    title: "General Aptitude & HR Assessment",
+    form: {
+      sections: [
+        {
+          id: 7,
+          title: "Logical Reasoning",
+          description: "Basic aptitude questions",
+          questions: [
+            {
+              id: 301,
+              type: "numeric",
+              question: "If a train travels 60 km in 1.5 hours, what is its average speed?",
+              validation: { min: 0, max: 500 }
+            },
+            {
+              id: 302,
+              type: "single-choice",
+              question: "Which shape has 5 sides?",
+              options: [
+                { label: "Triangle" },
+                { label: "Pentagon" },
+                { 
+                  label: "Hexagon",
+                  conditionalQuestion: {
+                    id: 3021,
+                    type: "short-text",
+                    question: "How many diagonals does this shape have?",
+                    validation: { min: 0, max: 20 }
+                  }
+                }
+              ]
+            },
+            {
+              id: 303,
+              type: "multi-choice",
+              question: "Which of these are prime numbers?",
+              options: [
+                { label: "2" },
+                { label: "3" },
+                { label: "4" },
+                { label: "5" }
+              ]
+            },
+            {
+              id: 304,
+              type: "short-text",
+              question: "Solve: 15 * 12 = ?",
+              validation: { maxLength: 5 }
+            }
+          ]
+        },
+        {
+          id: 8,
+          title: "Verbal Ability",
+          description: "English grammar and comprehension",
+          questions: [
+            {
+              id: 305,
+              type: "single-choice",
+              question: "Choose the correct spelling:",
+              options: [
+                { label: "Recieve" },
+                { label: "Receive" },
+                { label: "Receeve" }
+              ]
+            },
+            {
+              id: 306,
+              type: "long-text",
+              question: "Write a short passage about your favorite book.",
+              validation: { maxLength: 300 }
+            },
+            {
+              id: 307,
+              type: "short-text",
+              question: "What is the synonym of 'happy'?",
+              validation: { maxLength: 50 }
+            },
+            {
+              id: 308,
+              type: "multi-choice",
+              question: "Which are articles in English?",
+              options: [
+                { label: "a" },
+                { label: "an" },
+                { label: "the" },
+                { label: "on" }
+              ]
+            }
+          ]
+        },
+        {
+          id: 9,
+          title: "HR Questions",
+          description: "Soft skills & motivation",
+          questions: [
+            {
+              id: 309,
+              type: "long-text",
+              question: "Why do you want to join our company?",
+              required: true,
+              validation: { maxLength: 300 }
+            },
+            {
+              id: 310,
+              type: "file-upload",
+              question: "Upload your resume",
+              placeholder: "Please upload your CV",
+              validation: { fileType: "document", maxSizeMB: 5, multiple: false }
+            },
+            {
+              id: 311,
+              type: "single-choice",
+              question: "Would you relocate for this job?",
+              options: [
+                { label: "Yes" },
+                { 
+                  label: "No", 
+                  conditionalQuestion: {
+                    id: 3111,
+                    type: "long-text",
+                    question: "Explain why relocation is not possible.",
+                    validation: { maxLength: 200 }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+];
+
+await db.assessments.bulkAdd(assessments);
 }

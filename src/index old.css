@@ -1,0 +1,88 @@
+@import "tailwindcss";
+/* 
+/* Light Theme */
+@theme {
+  /* Backgrounds */
+  --color-background: #f9fafb;      /* page background */
+  --color-surface: #ffffff;         /* cards, modals */
+  --color-surface-alt: #f3f4f6;     /* subtle chips, inputs */
+  --color-overlay: rgba(0,0,0,0.5); /* modal backdrop */
+
+  /* Borders */
+  --color-border: #e5e7eb;          /* neutral borders */
+  --color-stroke: #d1d5db;          /* divider / strokes */
+
+  /* Text */
+  --color-text: #111827;            /* primary text */
+  --color-text-muted: #6b7280;      /* secondary text */
+
+  /* Accent / Brand */
+  --color-accent: #2563eb;          /* primary blue */
+  --color-accent-hover: #1d4ed8;
+
+  /* Active State */
+  --color-active: #14b8a6;          /* teal accent */
+  --color-active-hover: #0d9488;
+
+  /* Semantic */
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+
+} 
+
+/* Dark Theme */
+.dark {
+  /* Backgrounds */
+  --color-background: #111827;      /* deep gray background */
+  --color-surface: #1f2937;         /* cards, modals */
+  --color-surface-alt: #374151;     /* chips, inputs */
+  --color-overlay: rgba(0,0,0,0.7); /* stronger backdrop */
+
+  /* Borders */
+  --color-border: #4b5563;
+  --color-stroke: #6b7280;
+
+  /* Text */
+  --color-text: #f9fafb;
+  --color-text-muted: #9ca3af;
+
+  /* Accent / Brand */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+
+  /* Active State */
+  --color-active: #2dd4bf;
+  --color-active-hover: #5eead4;
+
+  /* Semantic */
+  --color-success: #22c55e;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
+  --color-info: #38bdf8;
+
+  /* Decorative / Vibrant */
+  --color-shape1: #7c3aed;   /* violet */
+  --color-shape2: #2563eb;   /* blue */
+  --color-shape3: #059669;   /* green */
+  --color-shape4: #b45309;   /* amber */
+}
+
+
+.candidate-card {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.candidate-card:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+/* Make cursor gray */
+.candidate-card {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewport='0 0 20 20' style='fill:gray;'><circle cx='10' cy='10' r='4'/></svg>")
+      10 10,
+    grab;
+}

@@ -13,15 +13,17 @@ import CandidatesDetailPageProvider from "../../features/candidates/providers/Ca
 import CandidatesPage from "../../features/candidates/pages/CandidatesPage";
 import CandidatesBoardPage from "../../features/candidates/pages/CandidateBoardPage";
 import { CandidatesProvider } from "../../features/candidates/context/CandidatesContext";
+import { BoardCandidatesProvider } from "../../features/candidates/context/BoardCandidatesContext";
+
 // Common
 import NotFound from "../../features/common/pages/NotFound";
 import Test from "../../features/candidates/pages/Test";
-import { BoardCandidatesProvider } from "../../features/candidates/context/BoardCandidatesContext";
-import { ToastContainer } from "react-toastify";
 
+// Assessments
+import AssessmentsBuilderRouterWrapper from "../../features/assessments/context/AssessmentsBuilderRouterWrapper"
+import DemoPage from "../../DemoPage";
 export default function AppRouter() {
   const { user } = useAuth();
-
   return (
       <Routes>
         {/* -------- Login -------- */}
@@ -74,6 +76,18 @@ export default function AppRouter() {
               path="/candidates/:id"
               element={
                 <CandidatesDetailPageProvider/>
+              }
+            />
+            <Route
+              path="/assessments/:jobId"
+              element={
+                <AssessmentsBuilderRouterWrapper/>
+              }
+            />
+            <Route
+              path="/demo"
+              element={
+                <DemoPage/>
               }
             />
           </>

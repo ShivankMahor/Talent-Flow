@@ -1,77 +1,161 @@
 @import "tailwindcss";
-
+/* 
 /* Light Theme */
 @theme {
-  /* Backgrounds */
-  --color-background: #f9fafb;      /* page background */
-  --color-surface: #ffffff;         /* cards, modals */
-  --color-surface-alt: #f3f4f6;     /* subtle chips, inputs */
-  --color-overlay: rgba(0,0,0,0.5); /* modal backdrop */
+ /* Core Backgrounds */
+  --color-background: #fafbfc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-surface-hover: #f1f5f9;
+  --color-overlay: rgba(15, 23, 42, 0.4);
 
   /* Borders */
-  --color-border: #e5e7eb;          /* neutral borders */
-  --color-stroke: #d1d5db;          /* divider / strokes */
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-border-strong: #cbd5e1;
 
   /* Text */
-  --color-text: #111827;            /* primary text */
-  --color-text-muted: #6b7280;      /* secondary text */
+  --color-text: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-disabled: #94a3b8;
 
-  /* Accent / Brand */
-  --color-accent: #2563eb;          /* primary blue */
-  --color-accent-hover: #1d4ed8;
+  /* Primary Brand */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-primary-dark: #1d4ed8;
 
-  /* Active State */
-  --color-active: #14b8a6;          /* teal accent */
-  --color-active-hover: #0d9488;
+  /* Secondary */
+  --color-secondary: #6366f1;
+  --color-secondary-hover: #4f46e5;
+  --color-secondary-light: #e0e7ff;
 
-  /* Semantic */
-  --color-success: #16a34a;
+  /* Accent */
+  --color-accent: #14b8a6;
+  --color-accent-hover: #0d9488;
+  --color-accent-light: #ccfbf1;
+
+  /* Semantic Colors */
+  --color-success: #10b981;
+  --color-success-hover: #059669;
+  --color-success-light: #d1fae5;
+
   --color-warning: #f59e0b;
-  --color-danger: #dc2626;
-  --color-info: #0ea5e9;
+  --color-warning-hover: #d97706;
+  --color-warning-light: #fef3c7;
 
-  /* Decorative / Pastel */
-  --color-shape1: #fbcfe8;   /* soft pink */
-  --color-shape2: #bfdbfe;   /* baby blue */
-  --color-shape3: #bbf7d0;   /* mint green */
-  --color-shape4: #fde68a;   /* light yellow */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-light: #fee2e2;
+
+  --color-info: #06b6d4;
+  --color-info-hover: #0891b2;
+  --color-info-light: #cffafe;
+
+  /* Extended Colors */
+  --color-purple: #8b5cf6;
+  --color-purple-light: #ede9fe;
+  
+  --color-pink: #ec4899;
+  --color-pink-light: #fce7f3;
+  
+  --color-orange: #f97316;
+  --color-orange-light: #fed7aa;
+  
+  --color-emerald: #10b981;
+  --color-emerald-light: #d1fae5;
+  
+  --color-sky: #0ea5e9;
+  --color-sky-light: #e0f2fe;
+  
+  --color-rose: #f43f5e;
+  --color-rose-light: #ffe4e6;
+
+  /* Neutral Grays (Tailwind-like) */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
 }
 
 /* Dark Theme */
 .dark {
-  /* Backgrounds */
-  --color-background: #111827;      /* deep gray background */
-  --color-surface: #1f2937;         /* cards, modals */
-  --color-surface-alt: #374151;     /* chips, inputs */
-  --color-overlay: rgba(0,0,0,0.7); /* stronger backdrop */
+  /* Core Backgrounds */
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-alt: #334155;
+  --color-surface-hover: #475569;
+  --color-overlay: rgba(15, 23, 42, 0.8);
 
   /* Borders */
-  --color-border: #4b5563;
-  --color-stroke: #6b7280;
+  --color-border: #334155;
+  --color-border-light: #475569;
+  --color-border-strong: #64748b;
 
   /* Text */
-  --color-text: #f9fafb;
-  --color-text-muted: #9ca3af;
+  --color-text: #f8fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-disabled: #64748b;
 
-  /* Accent / Brand */
-  --color-accent: #3b82f6;
-  --color-accent-hover: #60a5fa;
+  /* Primary Brand */
+  --color-primary: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-primary-light: #1e3a8a;
+  --color-primary-dark: #93c5fd;
 
-  /* Active State */
-  --color-active: #2dd4bf;
-  --color-active-hover: #5eead4;
+  /* Secondary */
+  --color-secondary: #818cf8;
+  --color-secondary-hover: #6366f1;
+  --color-secondary-light: #312e81;
 
-  /* Semantic */
-  --color-success: #22c55e;
+  /* Accent */
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #14b8a6;
+  --color-accent-light: #0f766e;
+
+  /* Semantic Colors */
+  --color-success: #34d399;
+  --color-success-hover: #10b981;
+  --color-success-light: #047857;
+
   --color-warning: #fbbf24;
-  --color-danger: #ef4444;
-  --color-info: #38bdf8;
+  --color-warning-hover: #f59e0b;
+  --color-warning-light: #b45309;
 
-  /* Decorative / Vibrant */
-  --color-shape1: #7c3aed;   /* violet */
-  --color-shape2: #2563eb;   /* blue */
-  --color-shape3: #059669;   /* green */
-  --color-shape4: #b45309;   /* amber */
+  --color-danger: #f87171;
+  --color-danger-hover: #ef4444;
+  --color-danger-light: #b91c1c;
+
+  --color-info: #22d3ee;
+  --color-info-hover: #06b6d4;
+  --color-info-light: #0e7490;
+
+  /* Extended Colors */
+  --color-purple: #a78bfa;
+  --color-purple-light: #6d28d9;
+  
+  --color-pink: #f472b6;
+  --color-pink-light: #be185d;
+  
+  --color-orange: #fb923c;
+  --color-orange-light: #c2410c;
+  
+  --color-emerald: #34d399;
+  --color-emerald-light: #047857;
+  
+  --color-sky: #38bdf8;
+  --color-sky-light: #0369a1;
+  
+  --color-rose: #fb7185;
+  --color-rose-light: #be123c;
 }
 
 

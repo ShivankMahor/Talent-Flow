@@ -63,11 +63,11 @@ export default function Login() {
         <div className="mt-6 border-t border-[var(--color-border)] pt-4">
           <p className="text-sm text-[var(--color-text-muted)] mb-2">Demo Accounts:</p>
           <div className="flex gap-2 justify-center">
-            <Button size="sm" variant="ghost" onClick={() => fillDemo("hr")}>
-              HR Manager
-            </Button>
             <Button size="sm" variant="ghost" onClick={() => fillDemo("candidate")}>
               Candidate
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => fillDemo("hr")}>
+              HR Manager
             </Button>
           </div>
         </div>

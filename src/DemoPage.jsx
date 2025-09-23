@@ -98,9 +98,26 @@ export default function DemoPage() {
       <section>
         <h2 className="font-semibold mb-2">Card</h2>
         <Card>
-          <h3 className="text-lg font-medium">Job Card</h3>
-          <p className="text-[var(--color-text-muted)]">Frontend Developer role with React & Tailwind</p>
-          <Button size="sm" className="mt-2">Apply Now</Button>
+          <Card variant="default">
+            <h3 className="text-lg font-medium">Job Card</h3>
+            <p className="text-[var(--color-text-muted)]">Frontend Developer role with React & Tailwind</p>
+            <Button size="sm" className="mt-2">Apply Now</Button>
+          </Card>
+          <Card variant="elevated">
+            <h3 className="text-lg font-medium">Job Card</h3>
+            <p className="text-[var(--color-text-muted)]">Frontend Developer role with React & Tailwind</p>
+            <Button size="sm" className="mt-2">Apply Now</Button>
+          </Card>
+          <Card variant="flat">
+            <h3 className="text-lg font-medium">Job Card</h3>
+            <p className="text-[var(--color-text-muted)]">Frontend Developer role with React & Tailwind</p>
+            <Button size="sm" className="mt-2">Apply Now</Button>
+          </Card>
+          <Card variant="outlined">
+            <h3 className="text-lg font-medium">Job Card</h3>
+            <p className="text-[var(--color-text-muted)]">Frontend Developer role with React & Tailwind</p>
+            <Button size="sm" className="mt-2">Apply Now</Button>
+          </Card>
         </Card>
       </section>
 
