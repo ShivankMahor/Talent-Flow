@@ -21,6 +21,7 @@ export default function Badge({ children, status, variant: explicitVariant, size
     offer: "info",
     hired: "success",
     rejected: "danger",
+    archived: "default"
   };
 
   // size variants

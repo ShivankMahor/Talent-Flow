@@ -13,13 +13,15 @@ export default function AssessmentsBuilderPage() {
       <div className="space-y-2 p-6">
           <AssessmentHeader title={title} setTitle={setTitle} />
           <div className="flex">
-            <div className="p-4 space-y-4 w-1/2">
+            <div className="p-4 space-y-4 min-w-1/2">
               <SectionList sections={sections} />
-              <Button onClick={save} loading={loading}>Save Assessment</Button>
+              {sections && sections.length !== 0 && <Button onClick={save} loading={loading}>Save Assessment</Button>}
             </div>
-            <div className="w-1/2">
-              <AssessmentPreviewForm title={title} sections={sections}/>
-            </div>
+            {sections.length !== 0 &&
+              <div className="w-1/2">
+                <AssessmentPreviewForm title={title} sections={sections}/>
+              </div>
+            }
           </div>
       </div>
     </div>

@@ -144,7 +144,6 @@ export default function AssessmentPreviewForm({ sections }) {
           />
         </Card>
       ))}
-
       <div className="flex justify-end pt-2">
         <Button type="submit" size="lg" className="min-w-32">
           Submit Assessment

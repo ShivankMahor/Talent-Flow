@@ -6,11 +6,12 @@ import Modal from "../../../components/Modal";
 import JobForm from "./JobForm";
 import { createJob } from "../services/jobs.api";
 import { toast } from "react-toastify";
+import { useJobs } from "../context/JobsContext";
 
-export default function JobsToolbar({ filters, onChangeFilters, allTags = [], onJobCreated }) {
+export default function JobsToolbar() {
+  const { filters, setFilters, tags, onJobCreated } = useJobs()
   const [searchInput, setSearchInput] = useState(filters.search || "");
   const [openModal, setOpenModal] = useState(false);
-
   const handleCreateJob = async (newJob) => {
     // 1. Create temporary optimistic job
     const tempId = `temp-${Date.now()}`;
@@ -40,7 +41,7 @@ export default function JobsToolbar({ filters, onChangeFilters, allTags = [], on
 
   // keep filters in sync with search
   useEffect(() => {
-    onChangeFilters({ ...filters, search: searchInput });
+    setFilters({ ...filters, search: searchInput });
   }, [searchInput]);
 
   return (
@@ -51,13 +52,13 @@ export default function JobsToolbar({ filters, onChangeFilters, allTags = [], on
           placeholder="Search jobs (title or tag)..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="flex-1"
+          className="min-w-sm"
         />
 
         {/* Status filter */}
         <Select
           value={filters.status}
-          onChange={(e) => onChangeFilters({ ...filters, status: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           options={[
             { value: "", label: "All Statuses" },
             { value: "active", label: "Active" },
@@ -69,10 +70,10 @@ export default function JobsToolbar({ filters, onChangeFilters, allTags = [], on
         {/* Tag filter */}
         <Select
           value={filters.tag || ""}
-          onChange={(e) => onChangeFilters({ ...filters, tag: e.target.value })}
+          onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
           options={[
             { value: "", label: "All Tags" },
-            ...allTags.map((tag) => ({ value: tag, label: tag })),
+            ...tags.map((tag) => ({ value: tag, label: tag.charAt(0).toUpperCase() + tag.slice(1) })),
           ]}
         />
       </div>

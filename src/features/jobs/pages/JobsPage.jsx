@@ -18,7 +18,6 @@ export default function JobsPage() {
     total,
     tags,
     handleReorder,
-    openEditModal,
     closeEditModal,
     selectedJob,
     openEdit,
@@ -28,8 +27,8 @@ export default function JobsPage() {
   return (
     <div>
       <Navbar />
-      <div className="p-4 space-y-4">
-        <JobsToolbar filters={filters} onChangeFilters={setFilters} allTags={tags} />
+      <div className="p-4 space-y-2">
+        <JobsToolbar />
         <JobsListCards jobs={optimisticJobs} onReorder={handleReorder} />
         <JobsPagination page={page} total={total} pageSize={10} onPageChange={setPage} />
         {/* Edit Modal */}
