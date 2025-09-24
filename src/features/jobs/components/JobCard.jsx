@@ -4,13 +4,14 @@ import Badge from "../../../components/Badge";
 import Button from "../../../components/Button";
 import { useJobs } from "../context/JobsContext";
 import { GripVerticalIcon } from "lucide-react";
+import TechTagsList from "../../../components/TechTagList";
 
 export default function JobCard({ job, dragHandleProps }) {
   const { openEditModal, handleArchive} = useJobs();
   const navigate = useNavigate();
 
   return (
-    <div className="group relative">
+    <div className="group relative mb-1.5">
       <div className="flex items-cente justify-between gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-2 py-4 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:border-[var(--color-accent)]/20 group-hover:-translate-y-1">
         <div className="flex items-center gap-2">
 
@@ -51,14 +52,7 @@ export default function JobCard({ job, dragHandleProps }) {
           {/* Tags row */}
           {job.tags && job.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {job.tags.slice(0, 6).map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-0.5 text-xs font-medium bg-[var(--color-surface-alt)] text-[var(--color-text-muted)] rounded-md border border-[var(--color-stroke)]/30 hover:bg-[var(--color-accent)]/5 hover:text-[var(--color-accent)] transition-colors duration-200"
-                >
-                  {tag.charAt(0).toUpperCase() + tag.slice(1)}
-                </span>
-              ))}
+              <TechTagsList tags={job.tags} size={3.5}/>
               {job.tags.length > 6 && (
                 <span className="px-2 py-0.5 text-xs font-medium text-[var(--color-text-muted)]">
                   +{job.tags.length - 6}

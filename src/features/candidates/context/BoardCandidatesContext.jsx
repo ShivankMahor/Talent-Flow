@@ -3,93 +3,85 @@
 //   useContext,
 //   useEffect,
 //   useState,
-//   startTransition,
 // } from "react";
 // import { toast } from "react-toastify";
-// import { getCandidates, updateCandidate } from "../services/candidates.api";
+// import { getCandidatesPage, updateCandidate } from "../services/candidates.api";
+// import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
 
 // const BoardCandidatesContext = createContext(null);
 
-// export function BoardCandidatesProvider({ children }) {
-//   const stages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
+// const stages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
 
-//   // stage → candidate[] mapping
-//   const [stagePages, setStagePages] = useState(
-//     stages.reduce((acc, s) => ({ ...acc, [s]: [] }), {})
+// export function BoardCandidatesProvider({ children }) {
+//   // candidates are grouped by stage { applied: [], screen: [], ... }
+//   const [stageCandidates, setStageCandidates] = useState(
+//     Object.fromEntries(stages.map((s) => [s, []]))
 //   );
+//   const [optimisticCandidates, setOptimisticCandidates] =
+//     useOptimisticHook(stageCandidates);
 
 //   const [page, setPage] = useState(1);
-//   const [hasMore, setHasMore] = useState(true);
+//   const [totalPages, setTotalPages] = useState(1);
 //   const [loading, setLoading] = useState(false);
 
-//   // fetch one "page" (all stages)
-//   async function fetchCandidates(page) {
-//     setLoading(true);
-//     try {
-//       const res = await getCandidates({ page, pageSize: 10 }); 
-//       // 👆 server should return { data: { applied:[], screen:[], ... }, meta: { totalPages } }
-
-//       setStagePages((prev) => {
-//         const updated = { ...prev };
-//         for (const stage of stages) {
-//           updated[stage] = [...prev[stage], ...(res.data[stage] || [])];
-//         }
-//         return updated;
-//       });
-
-//       setHasMore(page < res.meta.totalPages);
-//     } catch (err) {
-//       toast.error("Failed to load candidates ❌");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   // first load + subsequent pages
+//   // 🔹 Fetch candidates page (50 candidates total, grouped by stage)
 //   useEffect(() => {
-//     fetchCandidates(page);
+//     (async () => {
+//       try {
+//         setLoading(true);
+//         const res = await getCandidatesPage({ page });
+//         console.log("baord res")
+//         setStageCandidates(res.data); // grouped { applied: [...], screen: [...] }
+//         setTotalPages(res.meta.totalPages);
+//       } catch (err) {
+//         toast.error("Failed to load candidates ❌");
+//       } finally {
+//         setLoading(false);
+//       }
+//     })();
 //   }, [page]);
 
-//   const loadMore = () => {
-//     if (!loading && hasMore) {
-//       setPage((p) => p + 1);
-//     }
-//   };
-
-//   // move candidate between stages
 //   const handleStageChange = async (candidate, newStage) => {
-//     const oldStage = candidate.stage;
+//   const originalStage = candidate.stage;
+//   if (originalStage === newStage) return;
 
-//     // optimistic update
-//     setStagePages((prev) => {
+//   // 🔹 Optimistic update
+//   setStageCandidates((prev) => {
+//     const updated = { ...prev };
+//     updated[originalStage] = updated[originalStage].filter(
+//       (c) => c.id !== candidate.id
+//     );
+//     updated[newStage] = [{ ...candidate, stage: newStage }, ...updated[newStage]];
+//     return updated;
+//   });
+
+//   // 🔹 Send PATCH request
+//   try {
+//     await updateCandidate(candidate.id, { stage: newStage });
+    
+//   } catch (err) {
+//     // 🔹 Rollback on failure
+//     setStageCandidates((prev) => {
 //       const updated = { ...prev };
-//       updated[oldStage] = updated[oldStage].filter((c) => c.id !== candidate.id);
-//       updated[newStage] = [...updated[newStage], { ...candidate, stage: newStage }];
+//       updated[newStage] = updated[newStage].filter((c) => c.id !== candidate.id);
+//       updated[originalStage] = [
+//         { ...candidate, stage: originalStage },
+//         ...updated[originalStage],
+//       ];
 //       return updated;
 //     });
-
-//     startTransition(async () => {
-//       try {
-//         await updateCandidate(candidate.id, { stage: newStage });
-//       } catch (err) {
-//         // rollback on failure
-//         setStagePages((prev) => {
-//           const updated = { ...prev };
-//           updated[newStage] = updated[newStage].filter((c) => c.id !== candidate.id);
-//           updated[oldStage] = [...updated[oldStage], candidate];
-//           return updated;
-//         });
-//         toast.error("Failed to update stage ❌");
-//       }
-//     });
-//   };
+//     toast.error("Failed to update stage ❌");
+//   }
+// };
 
 //   return (
 //     <BoardCandidatesContext.Provider
 //       value={{
-//         stagePages,   // { applied:[], screen:[], ... }
-//         loadMore,
-//         hasMore,
+//         stageCandidates,
+//         optimisticCandidates,
+//         page,
+//         setPage,
+//         totalPages,
 //         loading,
 //         handleStageChange,
 //       }}
@@ -100,11 +92,14 @@
 // }
 
 // export function useBoardCandidates() {
-//   return useContext(BoardCandidatesContext);
+//   const ctx = useContext(BoardCandidatesContext);
+//   if (!ctx) {
+//     throw new Error(
+//       "useBoardCandidates must be used within a <BoardCandidatesProvider>. Wrap your app (e.g. in index.jsx or App.jsx) with <BoardCandidatesProvider>."
+//     );
+//   }
+//   return ctx;
 // }
-
-
-
 
 
 
@@ -114,11 +109,11 @@ import {
   useContext,
   useEffect,
   useState,
-  startTransition,
 } from "react";
 import { toast } from "react-toastify";
 import { getCandidatesPage, updateCandidate } from "../services/candidates.api";
 import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const BoardCandidatesContext = createContext(null);
 
@@ -132,69 +127,99 @@ export function BoardCandidatesProvider({ children }) {
   const [optimisticCandidates, setOptimisticCandidates] =
     useOptimisticHook(stageCandidates);
 
+  const [filters, setFilters] = useState({ search: "", stage: "" });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false);
-
-  // 🔹 Fetch candidates page (50 candidates total, grouped by stage)
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 400);
+  
   useEffect(() => {
+    setFilters((prev) => ({ ...prev, search: debouncedSearch }));
+    setPage(1);
+  }, [debouncedSearch]);
+  useEffect(() => {
+    let isMounted = true;
     (async () => {
       try {
         setLoading(true);
-        const res = await getCandidatesPage({ page });
+        setError(null);
+
+        const res = await getCandidatesPage({ ...filters, page });
+        if (!isMounted) return;
+
         setStageCandidates(res.data); // grouped { applied: [...], screen: [...] }
         setTotalPages(res.meta.totalPages);
+        setTotal(res.meta.total)
       } catch (err) {
-        toast.error("Failed to load candidates ❌");
+        if (isMounted) {
+          setError(err);
+          toast.error("Failed to load candidates ❌");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     })();
-  }, [page]);
+    return () => {
+      isMounted = false;
+    };
+  }, [filters, page]);
+
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search: searchTerm }));
+    setPage(1);
+  }, [debouncedSearch]);
 
   const handleStageChange = async (candidate, newStage) => {
-  const originalStage = candidate.stage;
-  if (originalStage === newStage) return;
+    const originalStage = candidate.stage;
+    if (originalStage === newStage) return;
 
-  // 🔹 Optimistic update
-  setStageCandidates((prev) => {
-    const updated = { ...prev };
-    updated[originalStage] = updated[originalStage].filter(
-      (c) => c.id !== candidate.id
-    );
-    updated[newStage] = [{ ...candidate, stage: newStage }, ...updated[newStage]];
-    return updated;
-  });
-
-  // 🔹 Send PATCH request
-  try {
-    await updateCandidate(candidate.id, { stage: newStage });
-    
-  } catch (err) {
-    // 🔹 Rollback on failure
+    // 🔹 Optimistic update
     setStageCandidates((prev) => {
       const updated = { ...prev };
-      updated[newStage] = updated[newStage].filter((c) => c.id !== candidate.id);
-      updated[originalStage] = [
-        { ...candidate, stage: originalStage },
-        ...updated[originalStage],
-      ];
+      updated[originalStage] = updated[originalStage].filter(
+        (c) => c.id !== candidate.id
+      );
+      updated[newStage] = [{ ...candidate, stage: newStage }, ...updated[newStage]];
       return updated;
     });
-    toast.error("Failed to update stage ❌");
-  }
-};
+
+    // 🔹 Send PATCH request
+    try {
+      await updateCandidate(candidate.id, { stage: newStage });
+    } catch (err) {
+      // 🔹 Rollback on failure
+      setStageCandidates((prev) => {
+        const updated = { ...prev };
+        updated[newStage] = updated[newStage].filter((c) => c.id !== candidate.id);
+        updated[originalStage] = [
+          { ...candidate, stage: originalStage },
+          ...updated[originalStage],
+        ];
+        return updated;
+      });
+      toast.error("Failed to update stage ❌");
+    }
+  };
 
   return (
     <BoardCandidatesContext.Provider
       value={{
         stageCandidates,
         optimisticCandidates,
+        filters,
+        setFilters,
         page,
+        total,
         setPage,
         totalPages,
         loading,
+        error,
         handleStageChange,
+        searchTerm:debouncedSearch,
+        setSearchTerm,
       }}
     >
       {children}
@@ -211,4 +236,3 @@ export function useBoardCandidates() {
   }
   return ctx;
 }
-

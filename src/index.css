@@ -5,7 +5,8 @@
  /* Core Backgrounds */
   --color-background: #fafbfc;
   --color-surface: #ffffff;
-  --color-surface-alt: #f8fafc;
+  /* --color-surface-alt: #f8fafc; */
+  --color-surface-alt: #F1F4F4;
   --color-surface-hover: #f1f5f9;
   --color-overlay: rgba(15, 23, 42, 0.4);
 
@@ -15,7 +16,7 @@
   --color-border-strong: #cbd5e1;
 
   /* Text */
-  --color-text: #0f172a;
+  --color-text: #121529;
   --color-text-secondary: #334155;
   --color-text-muted: #64748b;
   --color-text-disabled: #94a3b8;
@@ -71,18 +72,6 @@
   
   --color-rose: #f43f5e;
   --color-rose-light: #ffe4e6;
-
-  /* Neutral Grays (Tailwind-like) */
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
 }
 
 /* Dark Theme */
@@ -174,4 +163,15 @@
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewport='0 0 20 20' style='fill:gray;'><circle cx='10' cy='10' r='4'/></svg>")
       10 10,
     grab;
+}
+
+/* To disable increment and drecrement button in input type == numbers */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield; /* Firefox */
 }

@@ -8,15 +8,22 @@ export async function getCandidateById(id) {
   return await db.candidates.get(Number(id));
 }
 
-// Get candidate timeline
+/**
+ * GET /candidates/:id/timeline
+ */
 export async function getCandidateTimeline(id) {
-  // In real backend, fetch from /candidates/:id/timeline
-  // For now, simulate with Dexie or seed fake history
-  return [
-    { stage: "applied", date: "2025-01-01" },
-    { stage: "screen", date: "2025-01-03" },
-    { stage: "tech", date: "2025-01-05" },
-  ];
+  try {
+    console.log("calling getCandidateTimeline",id)
+    const res = await api.get(`/candidates/${id}/timeline`);
+    return res.data; // Expect [{ id, date, action, stage, by }]
+  } catch (err) {
+    if (err.response) {
+      console.error("[candidates.api] Timeline error:", err.response.status, err.response.data);
+    } else {
+      console.error("[candidates.api] Timeline network error:", err.message);
+    }
+    throw err;
+  }
 }
 
 // Update candidate
@@ -31,55 +38,22 @@ export async function updateCandidate(id, updates) {
 /**
  * GET /candidates?search=&stage=&page=
  */
-export async function getCandidates({
-  search = "",
-  stage = "",
-  page = 1,
-  pageSize = 100,
-} = {}) {
+export async function getCandidates( searchTerm = "", stage = "", page = 1, pageSize = 100 ) {
   console.log("[candidates.api] Fetching candidates:", {
-    search,
+    searchTerm,
     stage,
     page,
     pageSize,
   });
 
   try {
-    await axios.get("/api/candidates", { params: { search, stage, page } });
-
-    let candidates = await db.candidates.toArray();
-
-    if (search) {
-      const q = search.toLowerCase();
-      candidates = candidates.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.email.toLowerCase().includes(q)
-      );
-    }
-
-    if (stage) {
-      candidates = candidates.filter((c) => c.stage === stage);
-    }
-
-    const total = candidates.length;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    if (page > totalPages) page = totalPages;
-
-    const start = (page - 1) * pageSize;
-    const paginated = candidates.slice(start, start + pageSize);
-    
-    console.log("Sending response: ",{
-      data: paginated,
-      meta: { total, totalPages, page, pageSize },
-    })
-    return {
-      data: paginated,
-      meta: { total, totalPages, page, pageSize },
-    };
+    const res = await api.get("/candidates", {
+      params: { search:searchTerm, stage, page, pageSize },
+    });
+    return res.data;
   } catch (err) {
     if (err.response) {
-      console.error("[candidates.api] Mirage error:", err.response.status, err.response.data);
+      console.error("[candidates.api] Error:", err.response.status, err.response.data);
     } else {
       console.error("[candidates.api] Network error:", err.message);
     }
@@ -88,49 +62,25 @@ export async function getCandidates({
 }
 
 /**
- * GET /candidates?page=
- * Returns 50 candidates per page, grouped by stage
+ * GET /candidates?page=&pageSize=&search=&stage=
+ * Returns candidates (server handles Dexie/db logic)
  */
 export async function getCandidatesPage({
   page = 1,
   pageSize = 25,
+  search = "",
+  stage = "",
 } = {}) {
-  console.log("[candidates.api] Fetching candidates by page:", { page, pageSize });
+  console.log("[candidates.api] Fetching candidates:", { page, pageSize, search, stage });
 
   try {
-    // still ping Mirage/MSW for latency simulation
-    await axios.get("/api/candidates", { params: { page } });
-
-    // load from IndexedDB
-    let candidates = await db.candidates.toArray();
-
-    // sort by id or name to keep stable order
-    candidates = candidates.sort((a, b) => a.id - b.id);
-
-    const total = candidates.length;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    if (page > totalPages) page = totalPages;
-
-    // slice page
-    const start = (page - 1) * pageSize;
-    const pageSlice = candidates.slice(start, start + pageSize);
-
-    // group into stages
-    const stages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
-    const grouped = stages.reduce((acc, stage) => {
-      acc[stage] = pageSlice.filter((c) => c.stage === stage);
-      return acc;
-    }, {});
-
-    console.log("Sending response:", {
-      data: grouped,
-      meta: { total, totalPages, page, pageSize },
+    const res = await api.get("/candidatesboard", {
+      params: { page, pageSize, search, stage },
     });
 
-    return {
-      data: grouped,
-      meta: { total, totalPages, page, pageSize },
-    };
+    // API (route handler) is responsible for Dexie/db filtering + pagination
+    console.log("res: ",res)
+    return res.data;
   } catch (err) {
     if (err.response) {
       console.error("[candidates.api] Mirage error:", err.response.status, err.response.data);

@@ -1,9 +1,8 @@
-import { withFailure } from "../utils/WithFailure";
 import db from '../../../db/index'
 import { Response } from "miragejs";
 export default function authRoutes(server){
       
-  server.post("/login", withFailure(async(_schema, request) => {
+  server.post("/login", async (_schema, request) => {
     try{
       const { email, password } = JSON.parse(request.requestBody);
       console.log(email,password)
@@ -30,7 +29,7 @@ export default function authRoutes(server){
       console.error("[Mirage] /login error:", err);
       return new Response(500, {}, { error: "Server error, please try again" });
     }
-  }));
+  });
 
   // LOGOUT
   server.post( "/logout", async () => {

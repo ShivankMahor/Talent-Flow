@@ -8,26 +8,58 @@ const JobsContext = createContext(null);
 
 export function JobsProvider({ children }) {
   const [jobs, setJobs] = useState([]);
-  const [filters, setFilters] = useState({ search: "", status: "", sort: "order" });
+  const [filters, setFilters] = useState({ search: "", status: "active", sort: "order" });
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [tags, setTags] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const pageSize = 10;
 
   // optimistic wrapper
   const [optimisticJobs, setOptimisticJobs] = useOptimisticHook(jobs);
 
   // fetch jobs
+  // useEffect(() => {
+  //   (async () => {
+  //     const res = await getJobs({ ...filters, page, pageSize });
+  //     setJobs(res.data);
+  //     setTotal(res.meta.total);
+  //     setPage(res.meta.page);
+  //     setTags(res.tags);
+  //   })();
+  // }, [filters, page]);
+
+    // fetch jobs
   useEffect(() => {
+    let isMounted = true;
+
     (async () => {
-      const res = await getJobs({ ...filters, page, pageSize });
-      setJobs(res.data);
-      setTotal(res.meta.total);
-      setPage(res.meta.page);
-      setTags(res.tags);
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await getJobs({ ...filters, page, pageSize });
+        if (!isMounted) return;
+
+        setJobs(res.data);
+        setTotal(res.meta.total);
+        setPage(res.meta.page);
+        setTags(res.tags);
+      } catch (err) {
+        if (isMounted) {
+          setError(err);
+          toast.error(err.message || "Failed to load jobs ❌");
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [filters, page]);
 
   // --- Actions ---
@@ -116,7 +148,9 @@ export function JobsProvider({ children }) {
         setPage,
         total,
         tags,
+        pageSize,
         openEdit,
+        loading,
         handleReorder,
         handleEdit,
         handleArchive,

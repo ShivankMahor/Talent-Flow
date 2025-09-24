@@ -61,10 +61,10 @@ export default function Button({
       focus:ring-[var(--color-primary)]
     `,
     outline: `
-      bg-transparent text-[var(--color-primary)] 
-      border border-[var(--color-primary)]
-      hover:bg-[var(--color-primary-light)]
-      focus:ring-[var(--color-primary)]
+      bg-transparent text-[var(--color-text)] 
+      border border-[var(--color-border)]
+      hover:bg-[var(--color-surface-hover)]
+      focus:outline-[var(--color-primary)]
     `,
     ghost: `
       bg-transparent text-[var(--color-text)] 
@@ -93,7 +93,7 @@ export default function Button({
     <button
       {...props}
       disabled={loading || disabled}
-      className={clsx(base, variants[variant], sizes[size], className)}
+      className={clsx(className, base, variants[variant], sizes[size])}
     >
       {loading && (
         <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />

@@ -13,9 +13,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableJobCard from "./SortableJobCard";
+import Loader from "../../../components/Loader";
+import { useJobs } from "../context/JobsContext";
 
-export default function JobsListCards({ jobs, onReorder}) {
-  console.log(jobs)
+export default function JobsListCards() {
+  const { optimisticJobs, handleReorder, loading } = useJobs()
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -24,13 +26,15 @@ export default function JobsListCards({ jobs, onReorder}) {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const fromJob = jobs.find((job) => job.id === active.id);
-    const toJob = jobs.find((job) => job.id === over.id);
+    const fromJob = optimisticJobs.find((job) => optimisticJobs.id === active.id);
+    const toJob = optimisticJobs.find((job) => optimisticJobs.id === over.id);
     if (!fromJob || !toJob) return;
-    onReorder(active.id, fromJob, toJob);
+    handleReorder(active.id, fromJob, toJob);
   };
-
-  if (!jobs || jobs.length === 0) {
+  if(loading) {
+    return <Loader/>
+  }
+  if (!optimisticJobs || optimisticJobs.length === 0) {
     return (
       <div className="p-6 text-center text-[var(--color-text-muted)] border border-dashed border-[var(--color-border)] rounded-lg">
         <p className="text-lg font-medium">No jobs found</p>
@@ -38,6 +42,7 @@ export default function JobsListCards({ jobs, onReorder}) {
       </div>
     );
   }
+  
   return (
     <DndContext
       sensors={sensors}
@@ -45,10 +50,10 @@ export default function JobsListCards({ jobs, onReorder}) {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={jobs.map((job) => job.id)} // numbers
+        items={optimisticJobs.map((job) => job.id)} // numbers
         strategy={verticalListSortingStrategy}
       >
-        {jobs.map((job) => (
+        {optimisticJobs.map((job) => (
           <SortableJobCard key={job.id} job={job}/>
         ))}
       </SortableContext>

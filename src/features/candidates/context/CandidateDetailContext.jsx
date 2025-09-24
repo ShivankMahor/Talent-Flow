@@ -9,7 +9,6 @@ export function CandidateDetailProvider({ candidateId, children }) {
   const [timeline, setTimeline] = useState([]);
   const [notes, setNotes] = useState([]); // local notes with @mentions
   const [loading, setLoading] = useState(true);
-
   // Fetch candidate + timeline on mount
   useEffect(() => {
     if (!candidateId) return;
@@ -18,9 +17,11 @@ export function CandidateDetailProvider({ candidateId, children }) {
       try {
         setLoading(true);
         const data = await getCandidateById(candidateId);
-        const history = await getCandidateTimeline(candidateId);
+        console.log("[CandidateDetailProvider] data:",{data})
+        const res = await getCandidateTimeline(candidateId);
         setCandidate(data);
-        setTimeline(history);
+        console.log("history: ",res)
+        setTimeline(res);
       } catch (err) {
         toast.error("Failed to load candidate ❌");
       } finally {

@@ -7,7 +7,7 @@ const CandidatesContext = createContext(null);
 
 export function CandidatesProvider({ children }) {
   const [candidates, setCandidates] = useState([]);
-  const [filters, setFilters] = useState({ search: "", stage: "" });
+  const [stage, setStage] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -17,13 +17,12 @@ export function CandidatesProvider({ children }) {
   
   // Optimistic wrapper for UI updates
   const [optimisticCandidates, setOptimisticCandidates] = useOptimisticHook(candidates);
-
   // Load candidates when filters or page changes
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const res = await getCandidates({ ...filters, page, pageSize });
+        const res = await getCandidates(searchTerm, stage, page, pageSize);
 
         if (page === 1) {
           // first page → replace
@@ -42,7 +41,7 @@ export function CandidatesProvider({ children }) {
         setLoading(false);
       }
     })();
-  }, [filters, page]);
+  }, [stage, page, searchTerm]);
 
   // Infinite scroll loader
   const loadMore = () => {
@@ -70,13 +69,13 @@ export function CandidatesProvider({ children }) {
     });
   };
 
-  const filteredCandidates = optimisticCandidates.filter((c) => {
-    if (!searchTerm) return true;
-    return (
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  // const filteredCandidates = optimisticCandidates.filter((c) => {
+  //   if (!searchTerm) return true;
+  //   return (
+  //     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     c.email.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  // });
 
   const handleAddCandidate = async (newCandidate) => {
     console.log("new: ",newCandidate)
@@ -91,11 +90,11 @@ export function CandidatesProvider({ children }) {
       try {
         // 3. Call API
         const created = await createCandidate(newCandidate);
-
         // 4. Replace temp with real candidate
         setCandidates((prev) =>
           prev.map((c) => (c.id === tempId ? created : c))
         );
+        setTotal(prev => prev + 1)
 
         toast.success("Candidate added ✅");
       } catch (err) {
@@ -109,10 +108,10 @@ export function CandidatesProvider({ children }) {
       value={{
         candidates,
         setSearchTerm,
-        filteredCandidates,
+        // filteredCandidates,
         optimisticCandidates,
-        filters,
-        setFilters,
+        stage,
+        setStage,
         searchTerm,
         total,
         page,
@@ -129,5 +128,9 @@ export function CandidatesProvider({ children }) {
 }
 
 export function useCandidates() {
-  return useContext(CandidatesContext);
+  const ctx = useContext(CandidatesContext);
+  if(!ctx){
+    return new Error("Context Error, useCandidate must be inside a CandidateProvider")
+  }
+  return ctx
 }

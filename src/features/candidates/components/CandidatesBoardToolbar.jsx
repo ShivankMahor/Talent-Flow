@@ -9,6 +9,7 @@ import Loader from "../../../components/Loader.jsx";
 import { Users } from "lucide-react";
 import Card from "../../../components/Card.jsx";
 import SmallDetailItem from "../../../components/SmallDetailItem.jsx";
+import { useBoardCandidates } from "../context/BoardCandidatesContext.jsx";
 import { useDebounce } from "../../../hooks/useDebounce.js";
 
 const stages = [
@@ -21,30 +22,35 @@ const stages = [
   { value: "rejected", label: "Rejected" },
 ];
 
-export default function CandidatesToolbar() {
+export default function CandidatesBoardToolbar() {
   const {
-    stage,
-    setStage,
-    setSearchTerm,
+    stageCandidates,
+    optimisticCandidates,
+    filters,
+    setFilters,
+    page,
     total,
+    setPage,
+    totalPages,
     loading,
-    handleAddCandidate,
-    
-  } = useCandidates();
-  const [openModal, setOpenModal] = useState(false);
+    error,
+    handleStageChange,
+    searchTerm,
+    setSearchTerm,
+  } = useBoardCandidates();
+
   const [inputValue, setInputValue] = useState("");
   const debouncedValue = useDebounce(inputValue, 500);
-
-  useEffect(()=>{
-    setSearchTerm(inputValue)
-  },[debouncedValue])
+  useEffect(() => {
+    setSearchTerm(debouncedValue);
+  }, [debouncedValue, setSearchTerm]);
   return (
     <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2 mb-1.5">
             <Users className="w-6 h-6 text-[var(--color-accent)]" />
               <h1 className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
-                Candidates
+                Candidates KanBan Board
               </h1>
           </div>
           <SmallDetailItem label={"Total Candidates"} value={total} />
@@ -60,38 +66,8 @@ export default function CandidatesToolbar() {
               placeholder="Search by name or email..."
               className="w-full sm:w-64"
             />
-
-            <Select
-              label="Stage"
-              value={stage}
-              onChange={(e) => setStage(e.target.value)}
-              options={stages}
-              className="w-full sm:w-48"
-              disabled={loading}
-            />
-          </div>
-          <div className="flex items-end w-max">
-            <div>
-              {loading ? (
-                <Loader />
-              ) : (
-                <Button variant="primary" onClick={() => setOpenModal(true)}>
-                  New Candidate
-                </Button>
-              )}
-            </div>
           </div>
         </div>
-        <Modal
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          title="Add new Candidate"
-        >
-          <CandidateForm
-            onSubmit={handleAddCandidate}
-            onCancel={() => setOpenModal(false)}
-          />
-        </Modal>
     </div>
   );
 }

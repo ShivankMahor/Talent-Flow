@@ -73,7 +73,7 @@ export default function AppRouter() {
               }
             />
             <Route
-              path="/candidates/:id"
+              path="/candidate/:id"
               element={
                 <CandidatesDetailPageProvider/>
               }

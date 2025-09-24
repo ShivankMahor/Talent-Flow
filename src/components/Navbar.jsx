@@ -35,9 +35,6 @@ export default function Navbar() {
                 <Link to="/candidates/board" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
                   Candidates Board
                 </Link>
-                <Link to="/test" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
-                  test
-                </Link>
               </>
             ) : (
               <>
@@ -49,7 +46,7 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            <Button size="sm" onClick={handleLogout}>
+            <Button size="sm" variant="secondary" onClick={handleLogout}>
               Logout
             </Button>
           </div>

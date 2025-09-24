@@ -1,5 +1,5 @@
 import db from "../../../db";
-import { withFailure } from "../utils/withFailure";
+import { withFailure } from "../utils/WithFailure";
 
 export default function assessmentsRoute(server) {
   // GET /sample-assessments/:type

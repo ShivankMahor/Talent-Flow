@@ -4,33 +4,31 @@ import { useJobs } from "../context/JobsContext";
 import Navbar from "../../../components/Navbar";
 import JobsToolbar from "../components/JobsToolbar";
 import JobsListCards from "../components/JobListCards";
-import JobsPagination from "../components/JobsPagination";
 import Modal from "../../../components/Modal";
 import JobForm from "../components/JobForm";
+import Card from "../../../components/Card";
+import Pagination from "../../../components/Pagination";
 
 export default function JobsPage() {
   const {
-    optimisticJobs,
-    filters,
-    setFilters,
     page,
     setPage,
     total,
-    tags,
-    handleReorder,
     closeEditModal,
     selectedJob,
     openEdit,
-    handleEdit
+    handleEdit,
+    pageSize
   } = useJobs();
 
   return (
-    <div>
+    <div className="bg-[var(--color-surface-alt)]">
       <Navbar />
-      <div className="p-4 space-y-2">
+      <Card className="m-4">
         <JobsToolbar />
-        <JobsListCards jobs={optimisticJobs} onReorder={handleReorder} />
-        <JobsPagination page={page} total={total} pageSize={10} onPageChange={setPage} />
+        <div className="border-b w-full -mx-4 mb-4 -mt-2 border-[var(--color-border)]"></div>
+        <JobsListCards/>
+        <Pagination page={page} totalPages={Math.ceil(total / pageSize)} onChange={setPage} />
         {/* Edit Modal */}
         <Modal open={openEdit} onClose={closeEditModal} title="Edit Job">
           <JobForm
@@ -39,7 +37,7 @@ export default function JobsPage() {
             onCancel={closeEditModal}
           />
         </Modal>
-      </div>
+      </Card>
     </div>
   );
 }
