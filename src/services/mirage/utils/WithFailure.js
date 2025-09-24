@@ -7,7 +7,7 @@ import { Response } from "miragejs";
  * @param {number} options.failRate - probability between 0 and 1 (default 0.08 = 8%)
  * @param {number[]} options.delayRange - [min, max] ms artificial latency
  */
-export function withFailure(handler, { failRate = 0.5, delayRange = [200, 1200] } = {}) {
+export function withFailure(handler, { failRate = 0.1, delayRange = [200, 1200] } = {}) {
   return async (schema, request) => {
     const delay = Math.floor(
       Math.random() * (delayRange[1] - delayRange[0]) + delayRange[0]
