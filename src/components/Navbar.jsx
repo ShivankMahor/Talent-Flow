@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "./Button";
-import { useAuth } from "../app/providers/AuthProvider";
+import { useAuth } from "../app/providers/authProvider";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
