@@ -134,20 +134,20 @@ export default function CandidateDetailsPage() {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-b-[var(--color-border)] pb-4">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold text-[var(--color-text)] flex items-center gap-2">
+              <h1 className="md:text-3xl text-xl font-bold text-[var(--color-text)] flex items-center gap-2">
                 <User size={30} /> {candidate.name}{" "}
                 <StageBadge stage={candidate.stage} size={4} px={4} py={2} />
               </h1>
 
               <div className="flex flex-col gap-1 text-[var(--color-text-muted)]">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
                   <Mail size={16} /> {candidate.email}
                 </div>
 
                 {candidate.job && (
                   <div className="flex items-center gap-2">
                     <Briefcase size={16} /> {candidate.job.title}{" "}
-                    <span className="text-[var(--color-text-secondary)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       @ {candidate.job.company}
                     </span>
                   </div>

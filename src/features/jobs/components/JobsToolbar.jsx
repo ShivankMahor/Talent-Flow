@@ -42,17 +42,7 @@ export default function JobsToolbar() {
 
   return (
     <div className="mb-6">
-      {/* <div
-        className="
-          bg-[var(--color-surface)]
-          border border-[var(--color-border)]
-          rounded-xl shadow-sm
-          p-4 sm:p-5
-          flex flex-col gap-4
-        "
-      > */}
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Briefcase className="w-6 h-6 text-[var(--color-accent)]" />
             <h1 className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
@@ -66,8 +56,8 @@ export default function JobsToolbar() {
         </div>
 
         {/* Filters + Button */}
-        <div className="flex justify-between">
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto ">
+        <div className="md:flex grid grid-cols-1 gap-3 justify-between ">
+          <div className="grid grid-cols-1 md:flex flex-col sm:flex-row gap-3 w-full sm:w-auto ">
             {/* Search */}
             <Input
               label={"Search"}
@@ -113,14 +103,13 @@ export default function JobsToolbar() {
               {loading ? (
                 <Loader />
               ) : (
-                <Button variant="primary" onClick={() => setOpenModal(true)}>
+                <Button className={"w-80 md:w-full"} variant="primary" onClick={() => setOpenModal(true)}>
                   New Job
                 </Button>
               )}
             </div>
           </div> 
         </div>
-      {/* </div> */}
 
       {/* Modal */}
       <Modal

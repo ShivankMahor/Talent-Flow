@@ -25,17 +25,13 @@ export default function Login() {
     if (role === "hr") {
       setEmail("hr@test.com");
       setPassword("abcd");
-    } else if (role === "candidate") {
-      setEmail("candidate@test.com");
-      setPassword("1234");
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
-      <Card className="w-full max-w-md">
+      <Card className="w-full lg:max-w-1/3 lg:m-0 m-4">
         <h1 className="text-xl font-semibold mb-4 text-[var(--color-text)]">Login</h1>
-
         <form className="space-y-4" onSubmit={handleSubmit}>
           <Input
             label="Email"
@@ -63,10 +59,10 @@ export default function Login() {
         <div className="mt-6 border-t border-[var(--color-border)] pt-4">
           <p className="text-sm text-[var(--color-text-muted)] mb-2">Demo Accounts:</p>
           <div className="flex gap-2 justify-center">
-            <Button size="sm" variant="ghost" onClick={() => fillDemo("candidate")}>
+            {/* <Button size="sm" variant="ghost" onClick={() => fillDemo("candidate")}>
               Candidate
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => fillDemo("hr")}>
+            </Button> */}
+            <Button size="sm" variant="outline" onClick={() => fillDemo("hr")}>
               HR Manager
             </Button>
           </div>

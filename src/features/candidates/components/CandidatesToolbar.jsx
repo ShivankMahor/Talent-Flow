@@ -51,8 +51,8 @@ export default function CandidatesToolbar() {
         </div>
 
         {/* Filters */}
-        <div className="flex justify-between">
-          <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+        <div className="md:flex grid grid-cols-1 gap-3 justify-between ">
+          <div className="grid grid-cols-1 md:flex flex-col sm:flex-row gap-3 w-full sm:w-auto ">
             <Input
               label="Search"
               value={inputValue}
@@ -75,7 +75,7 @@ export default function CandidatesToolbar() {
               {loading ? (
                 <Loader />
               ) : (
-                <Button variant="primary" onClick={() => setOpenModal(true)}>
+                <Button className={"w-80 md:w-auto"} variant="primary" onClick={() => setOpenModal(true)}>
                   New Candidate
                 </Button>
               )}

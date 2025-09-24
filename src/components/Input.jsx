@@ -38,7 +38,7 @@ export default function Input({
   ...props 
 }) {
   return (
-    <div className="flex flex-col gap-1 w-full max-w-xs">
+    <div className="flex flex-col gap-1 w-full max-w-xl">
       {label && (
         <label className="text-sm text-[var(--color-text-muted)] font-medium">
           {label}

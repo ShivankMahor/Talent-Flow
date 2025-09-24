@@ -70,7 +70,7 @@ export default function Navbar() {
             {user?.role === "hr" || user?.role === "admin" ? (
               <>
                 <Link
-                  to="/jobs"
+                  to="/"
                   className="block text-[var(--color-text)] hover:text-[var(--color-accent)]"
                   onClick={() => setMenuOpen(false)}
                 >
@@ -84,7 +84,7 @@ export default function Navbar() {
                   Candidates
                 </Link>
                 <Link
-                  to="/assessments"
+                  to="/candidates/board"
                   className="block text-[var(--color-text)] hover:text-[var(--color-accent)]"
                   onClick={() => setMenuOpen(false)}
                 >
