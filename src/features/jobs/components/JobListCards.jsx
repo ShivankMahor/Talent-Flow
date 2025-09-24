@@ -26,8 +26,8 @@ export default function JobsListCards() {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const fromJob = optimisticJobs.find((job) => optimisticJobs.id === active.id);
-    const toJob = optimisticJobs.find((job) => optimisticJobs.id === over.id);
+    const fromJob = optimisticJobs.find((job) => job.id === active.id);
+    const toJob = optimisticJobs.find((job) => job.id === over.id);
     if (!fromJob || !toJob) return;
     handleReorder(active.id, fromJob, toJob);
   };
@@ -42,7 +42,7 @@ export default function JobsListCards() {
       </div>
     );
   }
-  
+  console.log("optimisticjobs: ",optimisticJobs)
   return (
     <DndContext
       sensors={sensors}

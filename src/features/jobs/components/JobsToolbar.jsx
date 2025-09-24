@@ -108,12 +108,6 @@ export default function JobsToolbar() {
             />
           </div>
 
-          {/* Create Job */}
-          {/* <div className="flex items-end">
-            <div>
-              
-            </div>
-          </div> */}
           <div className="flex items-end ">
             <div>
               {loading ? (
@@ -132,7 +126,7 @@ export default function JobsToolbar() {
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        title="Create Job"
+        title="Create New Job"
       >
         <JobForm
           onSubmit={handleCreateJob}

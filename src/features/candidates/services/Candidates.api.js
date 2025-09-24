@@ -3,11 +3,21 @@ import axios from "axios";
 import db from "../../../db";
 import { CandidateSchema } from "../schema/CandidateSchema";
 import api from '../../../services/axios'
-// Get one candidate
-export async function getCandidateById(id) {
-  return await db.candidates.get(Number(id));
-}
 
+// GET /candidates/:id
+export async function getCandidateById(id) {
+  try {
+    const res = await api.get(`/candidates/${id}`);
+    return res.data.candidate;
+  } catch (err) {
+    if (err.response) {
+      console.error("[candidates.api] getCandidateById error:", err.response.status, err.response.data);
+    } else {
+      console.error("[candidates.api] Network error:", err.message);
+    }
+    throw err;
+  }
+}
 /**
  * GET /candidates/:id/timeline
  */

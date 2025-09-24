@@ -64,6 +64,7 @@ export function JobsProvider({ children }) {
 
   // --- Actions ---
   const handleReorder = async (jobId, fromJob, toJob) => {
+    console.log("Handle Reorder")
     const items = [
       { ...fromJob, order: toJob.order },
       { ...toJob, order: fromJob.order },

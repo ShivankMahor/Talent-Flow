@@ -1,55 +1,108 @@
 import { withFailure }  from "../utils/WithFailure"
 import db from '../../../db/index'
 export default function candidatesRoutes(server) {
+
   // GET /candidates
-  server.get("/candidates", async (schema, request) => {
+server.get("/candidates", async (schema, request) => {
+  try {
+    let { search = "", stage = "", page = 1, pageSize = 100 } = request.queryParams;
+    console.log("recieved params:", search, stage);
+    page = Number(page);
+    pageSize = Number(pageSize);
+
+    let candidates = await db.candidates.toArray();
+
+    // 🔹 search filter
+    if (search) {
+      const q = search.toLowerCase();
+      candidates = candidates.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.email.toLowerCase().includes(q)
+      );
+    }
+
+    // 🔹 stage filter
+    if (stage) {
+      candidates = candidates.filter((c) => c.stage === stage);
+    }
+
+    // 🔹 pagination
+    const total = candidates.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (page > totalPages) page = totalPages;
+
+    const start = (page - 1) * pageSize;
+    const paginated = candidates.slice(start, start + pageSize);
+
+    // 🔹 enrich with job details
+    const enriched = await Promise.all(
+      paginated.map(async (c) => {
+        const job = c.jobId ? await db.jobs.get(c.jobId) : null;
+        return {
+          ...c,
+          job: job
+            ? {
+                id: job.id,
+                title: job.title,
+                company: job.company,
+                location: job.location,
+                status: job.status,
+              }
+            : null,
+        };
+      })
+    );
+
+    console.log("[/candidates] Sending response:", {
+      data: enriched,
+      meta: { total, totalPages, page, pageSize },
+    });
+
+    return {
+      data: enriched,
+      meta: { total, totalPages, page, pageSize },
+    };
+  } catch (err) {
+    console.error("[/candidates] Handler error:", err);
+    return new Response(
+      500,
+      { "Content-Type": "application/json" },
+      { error: "Failed to fetch candidates" }
+    );
+  }
+});
+
+  // GET /candidates/:id
+  server.get("/candidates/:id", async (schema, request) => {
     try {
-      let { search = "", stage = "", page = 1, pageSize = 100 } = request.queryParams;
-      console.log("recieved params:",search,stage)
-      page = Number(page);
-      pageSize = Number(pageSize);
+      const id = Number(request.params.id);
 
-      let candidates = await db.candidates.toArray();
-
-      if (search) {
-        const q = search.toLowerCase();
-        candidates = candidates.filter(
-          (c) =>
-            c.name.toLowerCase().includes(q) ||
-            c.email.toLowerCase().includes(q)
+      // fetch candidate from Dexie
+      const candidate = await db.candidates.get(id);
+      if (!candidate) {
+        return new Response(
+          404,
+          { "Content-Type": "application/json" },
+          { error: "Candidate not found" }
         );
       }
 
-      if (stage) {
-        candidates = candidates.filter((c) => c.stage === stage);
-      }
-
-      const total = candidates.length;
-      const totalPages = Math.max(1, Math.ceil(total / pageSize));
-      if (page > totalPages) page = totalPages;
-
-      const start = (page - 1) * pageSize;
-      const paginated = candidates.slice(start, start + pageSize);
-
-      console.log("[/candidates] Sending response:", {
-        data: paginated,
-        meta: { total, totalPages, page, pageSize },
-      });
+      // fetch associated job
+      const job = candidate.jobId ? await db.jobs.get(candidate.jobId) : null;
 
       return {
-        data: paginated,
-        meta: { total, totalPages, page, pageSize },
+        candidate:{...candidate, job}
       };
     } catch (err) {
-      console.error("[/candidates] Handler error:", err);
+      console.error("[/candidates/:id] Handler error:", err);
       return new Response(
         500,
         { "Content-Type": "application/json" },
-        { error: "Failed to fetch candidates" }
+        { error: "Failed to fetch candidate" }
       );
     }
   });
-
 
  // POST /candidates
   server.post(
@@ -73,6 +126,7 @@ export default function candidatesRoutes(server) {
       }
     })
   );
+
   // PATCH /candidates/:id
   server.patch("/candidates/:id", (schema, request) => {
     const id = request.params.id;

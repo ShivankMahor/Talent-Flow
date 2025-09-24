@@ -1,11 +1,3 @@
-// export default function Card({ children, className }) {
-//   return (
-//     <div className={`bg-[var(--color-surface)] rounded-md shadow-sm border border-[var(--color-border)] p-4 ${className || ""}`}>
-//       {children}
-//     </div>
-//   );
-// }
-
 export default function Card({ children, className = "", variant = "default", hover = false, ...props }) {
   const variants = {
     default: `bg-white border border-gray-200 shadow-sm rounded-lg ${hover ? 'hover:shadow-md hover:-translate-y-0.5 transition-all duration-200' : ''}`,
