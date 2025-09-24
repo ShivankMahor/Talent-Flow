@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, startTransition } from "react";
 import { toast } from "react-toastify";
-import { createCandidate, getCandidates, updateCandidate } from "../services/candidates.api";
+import { createCandidate, getCandidates, updateCandidate } from "../services/Candidates.api";
 import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
 
 const CandidatesContext = createContext(null);

@@ -111,7 +111,7 @@ import {
   useState,
 } from "react";
 import { toast } from "react-toastify";
-import { getCandidatesPage, updateCandidate } from "../services/candidates.api";
+import { getCandidatesPage, updateCandidate } from "../services/Candidates.api";
 import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
 import { useDebounce } from "../../../hooks/useDebounce";
 

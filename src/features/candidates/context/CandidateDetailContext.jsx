@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, startTransition } from "react";
 import { toast } from "react-toastify";
-import { getCandidateById, getCandidateTimeline, updateCandidate } from "../services/candidates.api";
+import { getCandidateById, getCandidateTimeline, updateCandidate } from "../services/Candidates.api";
 
 const CandidateDetailContext = createContext(null);
 
