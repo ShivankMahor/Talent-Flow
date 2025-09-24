@@ -32,7 +32,7 @@ export default function CandidatesPage() {
         <CandidatesToolbar/>
         <div className="border-b w-full -mx-4 mb-4 -mt-2 border-[var(--color-border)]"></div>
         {/* <Card variant=""> */}
-          {loading ? (
+          {candidates.length === 0 && !loading ? (
             <Loader />
           ) : candidates.length === 0 && !loading ? (
             <div className="p-6 text-center text-[var(--color-text-muted)]">
