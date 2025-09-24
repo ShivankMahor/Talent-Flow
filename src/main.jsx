@@ -7,17 +7,17 @@ import { makeServer } from "./services/mirage/server";
 import { seedDB } from "./db/seed";
 import { BrowserRouter } from 'react-router-dom'
 
-if (process.env.NODE_ENV === "development") {
+async function init() {
   makeServer();
-}
-seedDB();
+  await seedDB();
 
-createRoot(document.getElementById('root')).render(
-  // <StrictMode>
-  <BrowserRouter>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </BrowserRouter>
-  // </StrictMode>,
-)
+  createRoot(document.getElementById("root")).render(
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+init();
