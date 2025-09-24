@@ -37,7 +37,7 @@ export default function TechTagsList({ tags = [], limit = 6, size, px, py }) {
             key={index}
             className={`
               flex items-center gap-1 px-${px?px:"2"} py-${py?py:'0.5'} text-xs font-medium rounded-full
-              bg-[var(--color-surface-alt)] text-[var(--color-text)]
+              bg-[var(--color-surface)] text-[var(--color-text)]
               border border-[var(--color-border)] shadow-sm
               transition-all duration-300 hover:scale-105 hover:shadow-md cursor-pointer
             `}

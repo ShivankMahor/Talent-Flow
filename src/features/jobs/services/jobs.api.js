@@ -54,7 +54,7 @@ export async function createJob(job) {
  */
 export async function updateJob(id, updates) {
   try {
-    const res = await axios.patch(`/api/jobs/${id}`, updates);
+    const res = await api.patch(`/jobs/${id}`, updates);
 
     return res.data;
   } catch (err) {

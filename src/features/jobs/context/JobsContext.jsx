@@ -1,5 +1,5 @@
 // features/jobs/context/JobsContext.jsx
-import { createContext, useContext, useEffect, useState, startTransition } from "react";
+import { createContext, useContext, useEffect, useState, startTransition, useCallback } from "react";
 import { toast } from "react-toastify";
 import { getJobs, reorderJob, updateJob } from "../services/jobs.api";
 import { useOptimisticHook } from "../../../hooks/useOptimisticHook";
@@ -113,7 +113,8 @@ export function JobsProvider({ children }) {
     });
   };
 
-  const handleArchive = async (job) => {
+  const handleArchive = useCallback(async (job) => {
+    console.log("handleArchive render")
     const toggledStatus = job.status === "archived" ? "active" : "archived";
 
     // optimistic update
@@ -134,7 +135,7 @@ export function JobsProvider({ children }) {
         toast.error(err.message || "Failed to update status ❌");
       }
     });
-  };
+  },[jobs]);
 
 
   return (
