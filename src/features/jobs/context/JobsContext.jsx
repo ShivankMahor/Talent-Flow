@@ -63,33 +63,83 @@ export function JobsProvider({ children }) {
   }, [filters, page]);
 
   // --- Actions ---
-  const handleReorder = async (jobId, fromJob, toJob) => {
-    console.log("Handle Reorder")
-    const items = [
-      { ...fromJob, order: toJob.order },
-      { ...toJob, order: fromJob.order },
-    ];
+const handleReorder = async (activeId, fromJob, toJob) => {
+  console.log("[handleReorder] Triggered:", { activeId, fromJob, toJob });
 
-    // optimistic update
-    setOptimisticJobs({ type: "updateTwoJobs", items});
-    
-    startTransition(async () => {
-      try {
-        const { updatedFromJob, updatedToJob } = await reorderJob(jobId, fromJob.order, toJob.order);
-        setJobs((prev) => {
-          const updated = prev.map((job) =>
-            job.id === updatedFromJob.id ? updatedFromJob :
-            job.id === updatedToJob.id ? updatedToJob :
-            job
-          );
-          return [...updated].sort((a, b) => a.order - b.order);
-        });
-        toast.success("Job order updated ✅");
-      } catch (err) {
-        toast.error("Failed to reorder job ❌");
-      }
+  startTransition(async () => {
+    console.log("[handleReorder] Dispatching optimistic reorder:", {
+      activeId,
+      overId: toJob.id,
     });
-  };
+    setOptimisticJobs({ type: "reorderList", activeId, overId: toJob.id });
+
+    try {
+      console.log("[handleReorder] Calling reorderJob API:", {
+        jobId: activeId,
+        fromOrder: fromJob.order,
+        toOrder: toJob.order,
+      });
+      const updatedJobs = await reorderJob(activeId, fromJob.order, toJob.order, page, pageSize);
+      console.log("[handleReorder] API response:", updatedJobs);
+
+      setJobs((prev) => {
+        console.log("[handleReorder] Previous jobs (before merge):", prev);
+        console.log("[handleReorder] Backend updated jobs:", updatedJobs);
+
+        const updatedMap = new Map(updatedJobs.map((j) => [j.id, j]));
+        const updated = prev.map((job) =>
+          updatedMap.has(job.id) ? updatedMap.get(job.id) : job
+        );
+
+        const sorted = [...updated].sort((a, b) => a.order - b.order);
+        console.log("[handleReorder] Final merged+sorted jobs:", sorted);
+
+        return sorted;
+      });
+
+      toast.success("Job order updated ✅");
+    } catch (err) {
+      console.error("[handleReorder] Reorder failed ❌", err);
+      toast.error("Failed to reorder job ❌");
+    }
+  });
+};
+
+  // const handleReorder = async (jobId, fromJob, toJob) => {
+  //   console.log("Handle Reorder")
+  //   const items = [
+  //     { ...fromJob, order: toJob.order },
+  //     { ...toJob, order: fromJob.order },
+  //   ];
+
+  //   // optimistic update
+  //   startTransition(async () => {
+  //     setOptimisticJobs({ type: "reorderList", activeId: active.id, overId: over.id });
+    
+  //     try {
+  //       const { updatedFromJob, updatedToJob } = await reorderJob(jobId, fromJob.order, toJob.order);
+  //       setJobs(prev => {
+  //         const updated = prev.map((job) =>
+  //           job.id === updatedFromJob.id ? updatedFromJob :
+  //           job.id === updatedToJob.id ? updatedToJob :
+  //           job);
+  //         if (JSON.stringify(updated) === JSON.stringify(prev)) return prev; // no change
+  //         return [...updated].sort((a, b) => a.order - b.order);
+  //       });
+  //       // setJobs((prev) => {
+  //       //   const updated = prev.map((job) =>
+  //       //     job.id === updatedFromJob.id ? updatedFromJob :
+  //       //     job.id === updatedToJob.id ? updatedToJob :
+  //       //     job
+  //       //   );
+  //       //   return [...updated].sort((a, b) => a.order - b.order);
+  //       // });
+  //       toast.success("Job order updated ✅");
+  //     } catch (err) {
+  //       toast.error("Failed to reorder job ❌");
+  //     }
+  //   });
+  // };
 
   const handleEdit = async (jobId, updates) => {
     const original = jobs.find((j) => j.id === jobId);

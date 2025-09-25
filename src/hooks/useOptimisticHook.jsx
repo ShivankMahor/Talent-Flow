@@ -15,6 +15,7 @@ import { useOptimistic } from "react";
  */
 export function useOptimisticHook(initial = []) {
   const [optimistic, dispatch] = useOptimistic(initial, (current, action) => {
+    console.log("inside optimistic hook: ",action.type)
     switch (action.type) {
       case "swapTwo": {
         const { id1, id2 } = action;
@@ -37,14 +38,32 @@ export function useOptimisticHook(initial = []) {
       //     return current.map((i) => (map.has(i.id) ? { ...i, ...map.get(i.id) } : i));
       //   }
       
-      case "updateTwoJobs": {
-        const map = new Map(action.items.map((i) => [i.id, i]));
-        const temp = current.map((i) =>
-          map.has(i.id) ? { ...i, ...map.get(i.id) } : i
-        );
-        console.log("Data inside the useOptismistic: ",temp)
-        return [...temp].sort((a,b)=> a.order - b.order)
+      case "reorderList": {
+        const { activeId, overId } = action;
+        const arr = [...current];
+        const oldIndex = arr.findIndex((i) => i.id === activeId);
+        const newIndex = arr.findIndex((i) => i.id === overId);
+
+        if (oldIndex === -1 || newIndex === -1) return current;
+
+        // move the job
+        const [moved] = arr.splice(oldIndex, 1);
+        arr.splice(newIndex, 0, moved);
+
+        // reassign order
+        const reordered = arr.map((job, idx) => ({
+          ...job,
+          order: idx + 1,
+        }));
+
+        const sorted = [...reordered].sort((a,b)=>(a.order - b.order));
+        
+        
+        console.log("[optimisticHook → reorderList] before reorder:", current);
+        console.log("[optimisticHook → reorderList] after reorder:", sorted);
+        return sorted
       }
+
 
       case "addLast": {
         return [...current, action.item];

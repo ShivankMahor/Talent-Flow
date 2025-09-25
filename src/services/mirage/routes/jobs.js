@@ -177,36 +177,45 @@ export default function jobsRoutes(server) {
 
 
   // PATCH /jobs/:id/reorder
-  server.patch("/jobs/:id/reorder", withFailure(async (_schema, request) => {
-    console.log("backend")
-    try{
-      const {fromOrder, toOrder } = JSON.parse(request.requestBody);
-      const fromJob = await db.jobs.where("order").equals(fromOrder).first();
-      const toJob = await db.jobs.where("order").equals
-      (toOrder).first();
-      if (!fromJob || !toJob) {
-        throw new Error("Jobs not found for reorder");
-      }
+// PATCH /jobs/:id/reorder
+server.patch("/jobs/:id/reorder", withFailure(async (_schema, request) => {
+  console.log("backend reorder");
 
-      // 3️⃣ Swap their order values using Dexie update
-      await db.transaction("rw", db.jobs, async () => {
-        await db.jobs.update(fromJob.id, { order: toOrder });
-        await db.jobs.update(toJob.id, { order: fromOrder });
-      });
+  try {
+    const { fromOrder, toOrder } = JSON.parse(request.requestBody);
+    const allJobs = await db.jobs.orderBy("order").toArray();
 
-      // 4️⃣ Re-fetch updated jobs
-      const updatedFromJob = await db.jobs.get(fromJob.id);
-      const updatedToJob = await db.jobs.get(toJob.id);
-
-      return { updatedFromJob, updatedToJob }
-    }catch(err){
-      console.error("[jobs.api] Reorder failed ❌", err);
-      return new Response(
-        500,
-        { "Content-Type": "application/json" },
-        { error: "Failed to reporder job" }
-      );; 
+    // reorder in-memory
+    const fromIndex = allJobs.findIndex((j) => j.order === fromOrder);
+    const toIndex = allJobs.findIndex((j) => j.order === toOrder);
+    if (fromIndex === -1 || toIndex === -1) {
+      throw new Error("Jobs not found for reorder");
     }
-    return payload;
-  }));
+
+    const [moved] = allJobs.splice(fromIndex, 1);
+    allJobs.splice(toIndex, 0, moved);
+
+    // reassign sequential order values
+    const reordered = allJobs.map((j, idx) => ({ ...j, order: idx + 1 }));
+
+    // persist to Dexie
+    await db.transaction("rw", db.jobs, async () => {
+      for (const job of reordered) {
+        await db.jobs.update(job.id, { order: job.order });
+      }
+    });
+
+    // 4️⃣ sort by order before sending
+    const sorted = [...reordered].sort((a, b) => a.order - b.order);
+
+    // 5️⃣ log outgoing payload
+    console.log("[jobs.api] Returning reordered jobs:", sorted);
+
+    return sorted;
+  } catch (err) {
+    console.error("[jobs.api] Reorder failed ❌", err);
+    return new Response(500, { "Content-Type": "application/json" }, { error: "Failed to reorder job" });
+  }
+}));
+
 }

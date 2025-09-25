@@ -81,12 +81,14 @@ export async function reorderJob(jobId, fromOrder, toOrder) {
 
   try {
     const res = await api.patch(`/jobs/${jobId}/reorder`, { fromOrder, toOrder });
-    return res.data
+    return res.data; // now returns full reordered array
   } catch (err) {
     console.error("[jobs.api] Reorder failed ❌", err);
-    throw err;
+    // normalize error (so toast shows useful message)
+    throw new Error(err.response?.data?.error || err.message || "Reorder failed");
   }
 }
+
 /**
  * GET /jobs/:id → fetch job by ID
  */
