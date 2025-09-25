@@ -22,6 +22,7 @@ import Test from "../../features/candidates/pages/Test";
 // Assessments
 import AssessmentsBuilderRouterWrapper from "../../features/assessments/context/AssessmentsBuilderRouterWrapper"
 import DemoPage from "../../DemoPage";
+import DashboardPage from "../../features/dashboard/provider/DashboardPage";
 export default function AppRouter() {
   const { user } = useAuth();
   return (
@@ -84,6 +85,7 @@ export default function AppRouter() {
                 <AssessmentsBuilderRouterWrapper/>
               }
             />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route
               path="/demo"
               element={

@@ -35,6 +35,9 @@ export default function Navbar() {
                 <Link to="/candidates/board" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
                   Candidates Board
                 </Link>
+                <Link to="/dashboard" className="text-[var(--color-text)] hover:text-[var(--color-accent)]">
+                  Dashboard
+                </Link>
               </>
             ) : (
               <>
@@ -89,6 +92,13 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                 >
                   Assessments
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="block text-[var(--color-text)] hover:text-[var(--color-accent)]"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Dashbaord
                 </Link>
               </>
             ) : (
