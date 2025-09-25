@@ -533,10 +533,10 @@ const assessments = [
             type: "multi-choice",
             question: "Which of these are array methods?",
             options: [
-              { label: "map()" },
-              { label: "filter()" },
-              { label: "reduce()" },
-              { label: "assign()" }
+              "map()" ,
+              "filter()",
+              "reduce()",
+              "assign()" 
             ]
           }
         ]
@@ -597,10 +597,10 @@ const assessments = [
             type: "multi-choice",
             question: "Which of the following are React lifecycle methods (class)?",
             options: [
-              { label: "componentDidMount" },
-              { label: "componentDidUpdate" },
-              { label: "componentWillUnmount" },
-              { label: "onMounted" }
+              "componentDidMount",
+              "componentDidUpdate" ,
+              "componentWillUnmount" ,
+              "onMounted" 
             ]
           }
         ]
@@ -656,10 +656,10 @@ const assessments = [
               type: "multi-choice",
               question: "Which of these are SQL commands?",
               options: [
-                { label: "SELECT" },
-                { label: "INSERT" },
-                { label: "FETCH" },
-                { label: "UPDATE" }
+                "SELECT" ,
+                 "INSERT" ,
+                 "FETCH" ,
+                "UPDATE" 
               ]
             },
             {
@@ -711,7 +711,7 @@ const assessments = [
             },
             {
               id: 208,
-              type: "multi-choice",
+              type: "single-choice",
               question: "Which of these are caching solutions?",
               options: [
                 { label: "Redis" },
@@ -781,7 +781,7 @@ const assessments = [
             },
             {
               id: 303,
-              type: "multi-choice",
+              type: "single-choice",
               question: "Which of these are prime numbers?",
               options: [
                 { label: "2" },
@@ -827,7 +827,7 @@ const assessments = [
             },
             {
               id: 308,
-              type: "multi-choice",
+              type: "single-choice",
               question: "Which are articles in English?",
               options: [
                 { label: "a" },

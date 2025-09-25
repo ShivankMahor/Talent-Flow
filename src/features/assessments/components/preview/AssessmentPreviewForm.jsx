@@ -1,13 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../../../../components/Card";
 import Button from "../../../../components/Button";
 import { CheckCircle } from "lucide-react";
 import SectionPreview from "./SectionPreview";
+import { useAssessmentsBuilder } from "../../context/AssessmentsBuilderProvider";
 
 export default function AssessmentPreviewForm({ sections }) {
+  const { jobId, submit } = useAssessmentsBuilder();
   const [answers, setAnswers] = useState({});
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!jobId) return;
+    const saved = localStorage.getItem(`submission-${jobId}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setAnswers(parsed.answers || {});
+      console.log("Loaded saved submission from localStorage:", parsed);
+    }
+  }, [jobId]);
 
   function handleChange(qId, value, question) {
   console.log("Answer updated:", qId, value);
@@ -16,7 +28,7 @@ export default function AssessmentPreviewForm({ sections }) {
   // Run validation for this question only
   const error = validateSingle(question, value);
   setErrors((prev) => ({ ...prev, [qId]: error || null }));
-}
+  }
 
   function validate() {
     let newErrors = {};
@@ -100,7 +112,7 @@ export default function AssessmentPreviewForm({ sections }) {
   function handleSubmit(e) {
     e.preventDefault();
     const validationErrors = validate();
-
+    console.log("validare",validate)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       const firstErrorElement = document.querySelector(".error-field");
@@ -111,6 +123,15 @@ export default function AssessmentPreviewForm({ sections }) {
       setIsSubmitted(true);
       setErrors({});
       console.log("Assessment submitted:", answers);
+
+      const submission = {
+        submittedAt: new Date().toISOString(),
+        answers,
+      };
+      localStorage.setItem(`submission-${jobId}`, JSON.stringify(submission));
+      console.log("Saved submission to localStorage:", submission);
+
+      submit(answers);
     }
   }
 

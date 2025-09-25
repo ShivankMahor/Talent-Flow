@@ -3,12 +3,12 @@ import api from "../../../services/axios"
 /**
  * GET /jobs
  */
-export async function getJobs({page = 1,pageSize = 10,search = "",status = "",sort = "",tag = "",} = {}) {
-  console.log("[jobs.api] Fetching jobs via API:", {page,pageSize,search,status,sort,tag,});
+export async function getJobs({page = 1,pageSize = 10,search = "",status = "",sort = "",tag = ""} = {}) {
+  console.log("[jobs.api] Fetching jobs via API:", {page,pageSize,search,status,sort,tag});
 
   try {
     const res = await api.get("/jobs", {
-      params: { page, pageSize, search, status, sort, tag },
+      params: { page, pageSize, search, status, sort, tag},
     });
 
     // API expected to return { data, meta, tags }

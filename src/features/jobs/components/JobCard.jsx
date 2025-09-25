@@ -29,7 +29,7 @@ export default function JobCard({ job, dragHandleProps }) {
             <div className="flex items-start justify-between gap-4">
               {/* Title + badge */}
               <div onClick={() => navigate(`/jobs/${job.id}`)} className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-0.5">
                   <h3 className="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] truncate">
                     {job.title}
                   </h3>
@@ -37,7 +37,7 @@ export default function JobCard({ job, dragHandleProps }) {
                 </div>
 
                 {/* Metadata */}
-                <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--color-text-muted)]">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--color-text-muted)] mb-1">
                   {job.company && <span>{job.company}</span>}
                   {job.location && <span>{job.location}</span>}
                   {job.salary && <span>{job.salary}</span>}

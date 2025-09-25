@@ -8,7 +8,7 @@ const JobsContext = createContext(null);
 
 export function JobsProvider({ children }) {
   const [jobs, setJobs] = useState([]);
-  const [filters, setFilters] = useState({ search: "", status: "active", sort: "order" });
+  const [filters, setFilters] = useState({ search: "", status: "active", sort: "order"});
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [tags, setTags] = useState([]);

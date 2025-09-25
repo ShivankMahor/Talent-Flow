@@ -3,7 +3,7 @@ import ConditionalPreview from "./ConditionalPreview";
 
 export default function QuestionPreview({ question, answers, errors, onChange }) {
   const value = answers[question.id];
-
+  // console.log("props: ", question)
   return (
     <div className={`space-y-3 ${errors[question.id] ? "error-field" : ""}`}>
       <div className="flex items-center gap-2">
@@ -48,7 +48,6 @@ export default function QuestionPreview({ question, answers, errors, onChange })
           className="w-full border rounded-lg px-3 py-2 text-sm"
         />
       )}
-
       {/* Single Choice */}
       {question.type === "single-choice" && (
         <div className="space-y-2">
@@ -60,7 +59,7 @@ export default function QuestionPreview({ question, answers, errors, onChange })
                   name={`q-${question.id}`}
                   value={opt.label}
                   checked={value === opt.label}
-                  onChange={() => onChange(question.id, opt.label)}
+                  onChange={() => onChange(question.id, opt.label, question)} // ✅ pass question
                 />
                 <span>{opt.label}</span>
               </label>
@@ -88,6 +87,62 @@ export default function QuestionPreview({ question, answers, errors, onChange })
             >
               <input
                 type="checkbox"
+                value={opt}
+                checked={value?.includes(opt) || false}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  const newValue = checked
+                    ? [...(value || []), opt]
+                    : (value || []).filter((o) => o !== opt);
+
+                  onChange(question.id, newValue, question); // ✅ pass question
+                }}
+              />
+              <span>{opt}</span>
+            </label>
+          ))}
+        </div>
+      )}
+
+      {/* Single Choice */}
+      {/* {question.type === "single-choice" && (
+        <div className="space-y-2">
+          {question.options?.map((opt, idx) => (
+            <div key={idx} className="space-y-2">
+              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input
+                  type="radio"
+                  name={`q-${question.id}`}
+                  value={opt.label}
+                  checked={value === opt.label}
+                  onChange={() => onChange(question.id, opt.label)}
+                />
+                <span>{opt.label}</span>
+              </label>
+
+              {value === opt.label && opt.conditionalQuestion && (
+                <ConditionalPreview
+                  question={opt.conditionalQuestion}
+                  answers={answers}
+                  errors={errors}
+                  onChange={onChange}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )} */}
+
+      {/* Multi Choice */}
+      {/* {question.type === "multi-choice" && (
+        <div className="space-y-2">
+          {question.options?.map((opt, idx) => (
+            <label
+              key={idx}
+              className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <input
+                type="checkbox"
                 value={opt.label}
                 checked={value?.includes(opt.label) || false}
                 onChange={(e) => {
@@ -104,7 +159,7 @@ export default function QuestionPreview({ question, answers, errors, onChange })
             </label>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* File Upload */}
       {question.type === "file-upload" && (

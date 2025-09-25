@@ -10,6 +10,8 @@ import { useJobs } from "../context/JobsContext";
 import SmallDetailItem from "../../../components/SmallDetailItem";
 import { Briefcase } from "lucide-react";
 import Loader from "../../../components/Loader";
+import { useDebounce } from "../../../hooks/useDebounce"
+import { set } from "zod";
 
 export default function JobsToolbar() {
   const { filters, setFilters, tags, onJobCreated, total, loading } = useJobs();
@@ -39,7 +41,6 @@ export default function JobsToolbar() {
   useEffect(() => {
     setFilters({ ...filters, search: searchInput });
   }, [searchInput]);
-
   return (
     <div className="mb-6">
         <div className="flex items-center justify-between gap-4">

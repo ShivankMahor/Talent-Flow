@@ -107,7 +107,7 @@ import { useAssessmentsBuilder } from "../context/AssessmentsBuilderProvider";
 import Button from "../../../components/Button";
 
 export default function AssessmentHeader() {
-  const { title, setTitle, jobId, handleLoadSampleAssesment } = useAssessmentsBuilder();
+  const { title, setTitle, jobId, handleLoadSampleAssessment } = useAssessmentsBuilder();
 
   return (
     <div className="flex items-start justify-between pb-6 mb-6 border-b border-gray-200">
@@ -145,7 +145,7 @@ export default function AssessmentHeader() {
             size="sm"
             variant="secondary"
             className="justify-start"
-            onClick={() => handleLoadSampleAssesment("frontend")}
+            onClick={() => handleLoadSampleAssessment("frontend")}
           >
             🚀 Frontend Developer
           </Button>
@@ -153,7 +153,7 @@ export default function AssessmentHeader() {
             size="sm"
             variant="secondary"
             className="justify-start"
-            onClick={() => handleLoadSampleAssesment("backend")}
+            onClick={() => handleLoadSampleAssessment("backend")}
           >
             ⚙️ Backend Developer
           </Button>
@@ -161,7 +161,7 @@ export default function AssessmentHeader() {
             size="sm"
             variant="secondary"
             className="justify-start"
-            onClick={() => handleLoadSampleAssesment("general")}
+            onClick={() => handleLoadSampleAssessment("general")}
           >
             📘 General Aptitude
           </Button>
