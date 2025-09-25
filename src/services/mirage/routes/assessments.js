@@ -45,7 +45,7 @@ export default function assessmentsRoute(server) {
   // GET /sample-assessments/:type
   server.get(
     "/sample-assessments/:type",
-    withFailure(async (_schema, request) => {
+    async (_schema, request) => {
       const { type } = request.params;
       console.log("type: ", type);
 
@@ -78,9 +78,8 @@ export default function assessmentsRoute(server) {
       }
 
       return assessment.form;
-    })
-  );
-
+    });
+    
   // ✅ GET /assessments/:jobId
   server.get(
     "/assessments/:jobId",
